@@ -92,6 +92,16 @@ sources = [
  ["Friedman's Weekly Ads, Pro Tool Days", "https://www.friedmanshome.com/weekly-ads"],
  ["National Weather Service API, forecasts and active alerts per store", "https://api.weather.gov/"],
 ]
-data = dict(ads=json.load(open("ads.json")), proj=proj, sim=sim, der=der, products=prods, imgs=imgs, trends=trends, alerts=alerts, forces=forces, triggers=triggers, sources=sources)
+import base64, os
+CR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "creative")
+def _uri(f, mime): return f"data:{mime};base64," + base64.b64encode(open(os.path.join(CR, f), "rb").read()).decode()
+creative = {}
+for _a in json.load(open("ads.json"))["ads"]:
+    for _k, _lbl in _a.get("creative", []):
+        if _k.endswith("tiktok"):
+            creative[_k] = dict(video=_uri(_k + ".mp4", "video/mp4"), poster=_uri(_k + "-poster.jpg", "image/jpeg"))
+        else:
+            creative[_k] = _uri(_k + ".webp", "image/webp")
+data = dict(creative=creative, ads=json.load(open("ads.json")), proj=proj, sim=sim, der=der, products=prods, imgs=imgs, trends=trends, alerts=alerts, forces=forces, triggers=triggers, sources=sources)
 html = open("template.html").read().replace("/*__FONTS__*/", open("fonts.css").read()).replace("__LOGO__", A["logo"]).replace("__DATA__", json.dumps(data).replace("</", "<\\/"))
 sys.stdout.write(html)

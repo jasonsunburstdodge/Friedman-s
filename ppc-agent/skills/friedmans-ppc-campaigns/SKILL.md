@@ -85,12 +85,29 @@ Build each approved campaign **paused** (or as a draft) in the platform:
 
 Write the actual ads for every venue in each approved campaign, shown as they'll appear:
 - **Google Search**: responsive search ad with up to 15 headlines (30 characters), 4 descriptions (90), 2 paths (15) and sitelinks.
-- **Performance Max and local inventory**: headlines (30), long headline (90), descriptions (90), real product images from the catalog.
-- **Meta**: primary text (125 recommended), headline (40 recommended), the brand tile (charcoal, Barlow caps headline, Title Case subhead, SHOP plus a category) and product images.
+- **Performance Max and local inventory**: headlines (30), long headline (90), descriptions (90), the ad image in 1:1, 1.91:1 and 9:16, plus real product images from the catalog.
+- **Meta**: primary text (125 recommended), headline (40 recommended) and the ad image in each placement size (see Ad images below).
 - **Nextdoor**: a neighborly, store-specific post with a useful tip.
-- **TikTok**: ad text (100), a hook in the first 3 seconds, the script beats, and the AI-generated content label when used.
+- **TikTok**: ad text (100), a hook in the first 3 seconds, the script beats, the finished video (see TikTok video below) and the AI-generated content label.
 - **SMS**: one segment (160), ends with "Reply STOP to opt out." **Email**: subject, preheader, body, CTA.
 - Spanish variants are reviewed by a fluent team member before approval.
+
+### Ad images (ChatGPT)
+
+Generate the post images in ChatGPT image generation, in the approver's browser, from two references: the Friedman's wordmark (green on white, unaltered) and the campaign layout sheet (photo under a dark scrim, logo top left, white headline with the last words in yellow `#FFE500`, white subhead, rounded yellow button with dark text and an arrow).
+- **Sizes per venue:** Meta feed 1:1 plus Stories and Reels 9:16; Performance Max 1:1, 1.91:1 and 9:16; Nextdoor 1.91:1; email header 1.91:1. For 9:16, keep the top 250 px and bottom 350 px free of text.
+- **Prompt rules, every image:** exact headline, subhead and button text in quotes; no prices; unbranded products; no faces (gloved hands are fine); no fire, smoke, flooding or damage; calm, prepared mood for weather campaigns.
+- **One image per message** in a single ChatGPT thread, so the look stays consistent. Download each to a named file (`friedmans-<campaign>-<format>.png`), then compress to WebP at 1080 px on the long side.
+- **Check before approval:** logo matches the reference exactly, every word is spelled right (accents in Spanish), the button says SHOP plus a category, and nothing in the image breaks the brand rules. If the logo is wrong, regenerate or overlay the real logo file on a white plate.
+- **Label:** "AI-generated image (ChatGPT), placeholder until Friedman's photography." Swap in Friedman's own photos when they exist.
+
+### TikTok video (ElevenLabs)
+
+Same system as the content agent's TikToks:
+- **Voiceover:** ElevenLabs, eleven_v4, Nicole (warm, conversational) for garden and storm campaigns. Generate once with the default 4 takes; never re-run to retry. Pick a take and keep its generation ID.
+- **Scenes:** 4 to 5 text-free 9:16 scenes from ChatGPT, one per beat (hook, why, each step).
+- **Assembly:** the renderer (`creative/tiktok/render_ppc.py`) adds the logo plate, step labels, progress dashes and captions timed to the pauses in the voice, a product card from the catalog, the come in / order online / book a pro card, the animated logo end card, a music bed ducked under the voice, and the jingle.
+- **Rules:** no prices or stock counts in the voice or captions; don't say "all four stores" unless every hero item is in stock at all four; turn on TikTok's AI-generated content label.
 
 Check every ad automatically: platform hard limits, no prices in copy, no em or en dashes, no "best", "lowest" or "guarantee", no "Learn More", SHOP plus a category. Show character counts. Each ad gets **APPROVE**, **REWORK** (notes required) or **DECLINE**. Gate 2 lists ads approved vs total and cannot pass until every ad in that campaign's launch packet is approved or removed.
 

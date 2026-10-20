@@ -46,6 +46,11 @@ h4{font:600 18px Barlow,Arial,sans-serif;margin:0 0 6px;color:var(--ink9)}
 .diag{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:10px}
 .diag h5{font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;margin:0 0 4px;color:var(--ink9)}
 .diag ul,.diag ol{margin:0;padding-left:18px;font-size:15px}
+.cr{margin:10px -12px}.cr .main{display:block;width:100%;height:auto;background:var(--g100)}
+.cr .thumbs{display:flex;gap:6px;padding:6px 12px 0;flex-wrap:wrap}.cr .thumbs button{border:2px solid var(--g200);padding:0;background:#fff;border-radius:4px;cursor:pointer;line-height:0}
+.cr .thumbs button[aria-pressed=true]{border-color:var(--green)}.cr .thumbs img{height:44px;width:auto;border-radius:2px}
+.cr .meta{display:flex;justify-content:space-between;gap:8px;padding:6px 12px 0;font-size:12px;color:#595959}
+.cr video{display:block;width:100%;max-width:300px;margin:0 auto;aspect-ratio:9/16;background:#111;border-radius:10px}
 .adwrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
 .pv{border:1px solid var(--g200);border-radius:6px;background:#fff;overflow:hidden}
 .pv .pvh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--g200);font:600 13px Barlow,Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
@@ -289,6 +294,7 @@ footer a{color:#fff}
 <section id="ads" hidden>
  <h2>Ad Samples</h2>
  <p class="lead">The actual ads for every channel in the proposals, written in Friedman's voice and checked automatically: Google's character limits, TikTok's text limit, a single-text SMS, no prices, no dashes, no unsupported claims, and SHOP plus a category. Approve each one, or send it back with notes. Gate 2 waits until a campaign's ads are approved.</p>
+ <p class="small muted">Images were generated in ChatGPT from Friedman's logo and a reference layout, in every size each platform needs (click a thumbnail to switch). The TikTok video uses ChatGPT scenes and an ElevenLabs voiceover. All of it is AI-generated placeholder art: before launch, check the logo and every word on the image, and swap in Friedman's own photos when they exist. Products in the images are unbranded; live price and stock come from the product feed.</p>
  <div class="seg" id="adCamps" role="group" aria-label="Campaign"></div>
  <div id="adList" style="margin-top:16px"></div>
 </section>
@@ -769,23 +775,29 @@ function renderDrafts(){if(!ALD.length){$('#alDrafts').innerHTML='<p class="mute
 /* ---- Ad samples ---- */
 let adCamp=null;
 const cc=x=>x&&x.lim?`<span class="cc ${x.over?'over':''}">${x.n}/${x.lim}</span>`:'';
+const AIL='AI-generated image (ChatGPT) · placeholder until Friedman\'s photography';
+function crBlock(a){const c=a.creative;if(!c||!c.length||!D.creative)return '';const id='cr_'+a.id.replace(/[^A-Za-z0-9]/g,'');
+ if(c[0][0].endsWith('tiktok')){const v=D.creative[c[0][0]];return `<div class="cr"><video controls playsinline preload="none" poster="${v.poster}" src="${v.video}" aria-label="${esc(a.venue)} video ad"></video><div class="meta"><span>${esc(c[0][1])} · ElevenLabs voiceover (AI) · ChatGPT scene images</span></div></div>`}
+ const first=D.creative[c[0][0]];
+ return `<div class="cr" id="${id}"><img class="main" src="${first}" alt="${esc(a.venue)} ad image: ${esc(c[0][1])}" loading="lazy"><div class="meta"><span class="fmt">${esc(c[0][1])}</span><span>${AIL}</span></div>${c.length>1?`<div class="thumbs" role="group" aria-label="Ad formats">${c.map((x,i)=>`<button type="button" aria-pressed="${i===0}" data-cr="${id}" data-k="${x[0]}" data-l="${esc(x[1])}" title="${esc(x[1])}"><img src="${D.creative[x[0]]}" alt="${esc(x[1])}"></button>`).join('')}</div>`:''}</div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-cr]');if(!b)return;const w=document.getElementById(b.dataset.cr);w.querySelector('.main').src=D.creative[b.dataset.k];w.querySelector('.fmt').textContent=b.dataset.l;w.querySelectorAll('[data-cr]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
 function adPreview(a){const f=a.fmt;const imgs=(a.products||[]).map(i=>pimg(i)).join('');
  if(f==='rsa')return `<div class="gs"><div class="sp">Sponsored</div><div class="u">${esc(a.url)} › ${a.paths.map(p=>esc(p.text)).join(' › ')}</div>
   <div class="t">${a.headlines.slice(0,3).map(h=>esc(h.text)).join(' | ')}</div><div class="d">${esc(a.descriptions[0].text)} ${esc(a.descriptions[1]?a.descriptions[1].text:'')}</div>
   ${a.sitelinks?`<div class="sl">${a.sitelinks.map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}</div>
   <details class="assets"><summary>All assets with character counts</summary>${a.headlines.map(h=>`<div><span>H: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.descriptions.map(h=>`<div><span>D: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.paths.map(h=>`<div><span>Path: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}</details>`;
- if(f==='pmax')return `<div class="item" style="gap:6px;flex-wrap:wrap">${imgs}</div><div class="gs" style="margin-top:8px"><div class="sp">Sponsored · Friedman's</div><div class="t">${esc(a.headlines[0].text)}</div><div class="d">${esc(a.long_headlines[0].text)}</div></div>
+ if(f==='pmax')return `${crBlock(a)}<div class="small muted" style="margin-top:6px">Feed products (live price and stock)</div><div class="item" style="gap:6px;flex-wrap:wrap">${imgs}</div><div class="gs" style="margin-top:8px"><div class="sp">Sponsored · Friedman's</div><div class="t">${esc(a.headlines[0].text)}</div><div class="d">${esc(a.long_headlines[0].text)}</div></div>
   <details class="assets"><summary>All assets with character counts</summary>${a.headlines.map(h=>`<div><span>H: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.long_headlines.map(h=>`<div><span>Long: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.descriptions.map(h=>`<div><span>D: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}</details>`;
  if(f==='meta')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored</div></div></div>
   <p style="margin:8px 0;font-size:15px">${esc(a.primary.text)} ${cc(a.primary)}</p>
-  <div class="tile"><div><div class="h">${esc(a.tile.h)}</div><div class="s">${esc(a.tile.s)}</div><span class="b">${esc(a.tile.b)}</span></div><div style="display:flex;gap:4px">${(a.products||[]).slice(0,2).map(i=>pimg(i)).join('')}</div></div>
+  ${a.creative?crBlock(a):`<div class="tile"><div><div class="h">${esc(a.tile.h)}</div><div class="s">${esc(a.tile.s)}</div><span class="b">${esc(a.tile.b)}</span></div><div style="display:flex;gap:4px">${(a.products||[]).slice(0,2).map(i=>pimg(i)).join('')}</div></div>`}
   <div class="bar"><div><div class="small muted">FRIEDMANSHOME.COM</div><b>${esc(a.headline.text)}</b> ${cc(a.headline)}<div class="small">${esc(a.description)}</div></div><span class="c">${esc(a.cta)}</span></div></div>`;
- if(f==='nextdoor')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored · Local business</div></div></div><p style="margin:8px 0"><b>${esc(a.headline)}</b></p><p style="font-size:15px;margin:0 0 10px">${esc(a.body)}</p><div class="bar"><span class="small">friedmanshome.com</span><span class="c">${esc(a.cta)}</span></div></div>`;
- if(f==='tiktok')return `<div class="tt"><div class="hk">${esc(a.hook.replace(/^0 to 3 s: '/,'').replace(/'$/,''))}</div><b>@friedmanshome</b><div>${esc(a.text.text)} ${cc(a.text)}</div><div class="small" style="opacity:.8;margin-top:4px">Sponsored · ${esc(a.cta)}</div></div>
+ if(f==='nextdoor')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored · Local business</div></div></div><p style="margin:8px 0"><b>${esc(a.headline)}</b></p><p style="font-size:15px;margin:0 0 10px">${esc(a.body)}</p>${crBlock(a)}<div class="bar"><span class="small">friedmanshome.com</span><span class="c">${esc(a.cta)}</span></div></div>`;
+ if(f==='tiktok')return `${a.creative?crBlock(a):''}<div style="margin-top:8px;font-size:14px"><b>@friedmanshome</b> · <span class="small muted">Sponsored · ${esc(a.cta)}</span><div>${esc(a.text.text)} ${cc(a.text)}</div></div>
   <details class="assets"><summary>Script beats</summary><ol class="small" style="margin:6px 0">${[a.hook,...a.beats].map(b=>`<li>${esc(b)}</li>`).join('')}</ol></details>`;
  if(f==='sms')return `<div class="small muted" style="margin-bottom:6px">Text message</div><div class="smsb">${esc(a.text.text)}</div><div style="margin-top:6px">${cc(a.text)} · one text segment</div>`;
  if(f==='email')return `<div style="border:1px solid var(--g200);border-radius:6px;overflow:hidden"><div style="padding:8px 12px;background:var(--g100);font-size:14px"><b>${esc(a.subject)}</b><div class="small muted">${esc(a.preheader)}</div></div>
-  <div style="background:var(--charcoal);color:#fff;padding:14px;font:700 22px/1.1 Barlow;text-transform:uppercase">Frost Tonight</div><div style="padding:12px;font-size:15px">${a.body.map(p=>`<p style="margin:0 0 6px">${esc(p)}</p>`).join('')}<span class="btn" style="pointer-events:none">${esc(a.cta)}</span><p class="small muted" style="margin:10px 0 0">${esc(a.footer)}</p></div></div>`;
+  ${a.creative?`<div style="margin:0 12px">${crBlock(a)}</div>`:`<div style="background:var(--charcoal);color:#fff;padding:14px;font:700 22px/1.1 Barlow;text-transform:uppercase">Frost Tonight</div>`}<div style="padding:12px;font-size:15px">${a.body.map(p=>`<p style="margin:0 0 6px">${esc(p)}</p>`).join('')}<span class="btn" style="pointer-events:none">${esc(a.cta)}</span><p class="small muted" style="margin:10px 0 0">${esc(a.footer)}</p></div></div>`;
  return ''}
 function adStatus(id){const s=S.ad[id];return !s?'Waiting on your approval':s==='approve'?'<span class="pos">Approved for launch</span>':s==='decline'?'<span class="neg">Declined. Removed from the launch packet.</span>':'<span style="color:var(--warn)">Sent back. The agent revises and resubmits.</span>'}
 function renderAds(){const cs=D.proj.campaigns;if(!adCamp)adCamp=cs[0].id;

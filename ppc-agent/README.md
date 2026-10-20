@@ -17,6 +17,7 @@ Open the Overview tab first. It explains every part and has a five-minute walkth
 - **Campaigns.**
   - 3 to 5 test campaigns with traceable projections: spend, ROAS, and profit after cost and returns.
   - Ready-to-approve ads for Google Search, Performance Max, Meta, Nextdoor, TikTok, SMS and email.
+  - Ad images generated in ChatGPT in every placement size, and a 42-second TikTok with an ElevenLabs voiceover (AI-generated placeholders).
   - Purchasing and finance confirmations.
 - **Monitor.**
   - Hourly results and 8-hour reports.
@@ -33,6 +34,7 @@ Open the Overview tab first. It explains every part and has a five-minute walkth
 | `PROJECT_INSTRUCTIONS.md` | PPC agent instructions, gates, non-negotiables, and the data needed to go live |
 | `skills/` | The six PPC skills: research, campaigns, monitoring, segments, alerts, learnings |
 | `../skills/friedmans-brand-guidelines.md` | Brand skill, shared with the content agent |
+| `creative/` | The AI-generated ad images, the TikTok video and its renderer |
 | `demo-build/` | Data and scripts that build the demo (`python3 build.py assets.json > ../index.html`) |
 
 ## Real, assumed and simulated
