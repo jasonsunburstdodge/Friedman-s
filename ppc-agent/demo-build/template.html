@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Friedman's PPC Campaign Agent</title>
+<style>
+/*__FONTS__*/
+:root{--green:#007A33;--green-ink:#00632a;--charcoal:#222;--ink:#333;--ink9:#212427;--white:#fff;--g100:#F1F1F1;--g200:#E6E6E6;--g500:#808080;--lime:#C4D82E;--yellow:#FFE500;
+ --ok:#007A33;--warn:#B25E00;--bad:#B3261E;--sim:#5f6368}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--white);color:var(--ink);font:17px/1.55 "News Cycle",Arial,sans-serif}
+h1,h2,h3,h4,.bar,.btn,.tab,.lbl,.chip,th{font-family:Barlow,Arial,sans-serif}
+a{color:var(--green)}
+.util{background:var(--green);color:#fff;font:600 14px Barlow,Arial,sans-serif;padding:7px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.head{display:flex;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid var(--g200);flex-wrap:wrap}
+.head img{height:30px;width:auto;display:block}
+.head .ttl{font:700 20px Barlow,Arial,sans-serif;color:var(--green);text-transform:uppercase;letter-spacing:.03em}
+.head .gate{background:#fff;cursor:pointer;margin-left:auto;font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;border:1px solid var(--green);color:var(--green);padding:6px 10px}
+nav.tabs{display:flex;gap:0;overflow-x:auto;border-bottom:3px solid var(--green);background:#fff;position:sticky;top:0;z-index:5;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;background:none;border:0;padding:13px 14px 11px;font-weight:600;font-size:15px;color:var(--green);text-transform:uppercase;letter-spacing:.03em;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px}
+.tab[aria-selected=true]{background:var(--green);color:#fff}
+.tab:focus-visible,.btn:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 64px}
+section[hidden]{display:none}
+h2{font:400 40px/1.1 Barlow,Arial,sans-serif;text-transform:uppercase;color:var(--ink9);margin:8px 0 8px;letter-spacing:.01em}
+h3{font:600 22px/1.25 Barlow,Arial,sans-serif;color:var(--ink9);margin:28px 0 10px;text-transform:uppercase}
+h4{font:600 18px Barlow,Arial,sans-serif;margin:0 0 6px;color:var(--ink9)}
+.lead{font-size:19px;max-width:780px;margin:0 0 20px}
+.small{font-size:14px}
+.muted{color:#5d5d5d}
+.band{background:var(--charcoal);color:#fff;padding:28px 24px;margin:0 0 24px}
+.band h2{color:#fff;font-weight:600;text-transform:none;font-size:clamp(28px,5vw,45px)}
+.band p{max-width:760px;font-size:18px;margin:10px 0 0}
+.band .num{color:var(--lime);font:700 34px Barlow,Arial,sans-serif}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:20px}
+.kpis div{border-left:3px solid var(--lime);padding-left:12px}
+.kpis span{display:block;font-size:14px;color:#ddd}
+.akpi span{color:#5d5d5d}
+.subnav{display:flex;gap:6px;flex-wrap:wrap;max-width:1180px;margin:14px auto 0;padding:0 16px}
+.subnav button{background:#fff;border:1px solid var(--green);color:var(--green);font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;letter-spacing:.03em;padding:8px 12px;cursor:pointer}
+.subnav button[aria-pressed=true]{background:var(--green);color:#fff}
+.fun td.st{white-space:nowrap}
+.diag{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:10px}
+.diag h5{font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;margin:0 0 4px;color:var(--ink9)}
+.diag ul,.diag ol{margin:0;padding-left:18px;font-size:15px}
+.adwrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
+.pv{border:1px solid var(--g200);border-radius:6px;background:#fff;overflow:hidden}
+.pv .pvh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--g200);font:600 13px Barlow,Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.pv .pvb{padding:12px}
+.gs .sp{font-size:12px;font-weight:700;color:#202124}.gs .u{font-size:13px;color:#4d5156}.gs .t{font-size:19px;color:#1a0dab;line-height:1.3;margin:2px 0}.gs .d{font-size:14px;color:#4d5156}
+.gs .sl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:13px;color:#1a0dab}
+.mp .who{display:flex;gap:8px;align-items:center;font-size:14px}.mp .av{width:32px;height:32px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font:700 15px Barlow}
+.mp .tile{background:var(--charcoal);color:#fff;padding:16px;margin:10px -12px;display:flex;gap:10px;align-items:flex-end;justify-content:space-between}
+.mp .tile .h{font:700 22px/1.05 Barlow,Arial,sans-serif;text-transform:uppercase}.mp .tile .s{font-size:14px;margin-top:4px}
+.mp .tile .b{display:inline-block;margin-top:8px;background:#fff;color:var(--green);font:600 12px Barlow;text-transform:uppercase;padding:5px 8px}
+.mp .tile img{width:56px;height:56px;object-fit:contain;background:#fff;border-radius:6px}
+.mp .bar{display:flex;justify-content:space-between;align-items:center;background:var(--g100);margin:0 -12px -12px;padding:8px 12px;font-size:14px}
+.mp .bar .c{border:1px solid #999;padding:4px 10px;font-size:13px;background:#fff}
+.tt{background:#111;color:#fff;border-radius:14px;padding:14px;max-width:260px;margin:0 auto;aspect-ratio:9/16;display:flex;flex-direction:column;justify-content:flex-end;font-size:14px}
+.tt .hk{font:700 18px/1.15 Barlow;text-transform:uppercase;margin-bottom:auto;padding-top:20px}
+.smsb{background:#e9e9eb;border-radius:16px;padding:10px 12px;font-size:15px;max-width:290px}
+.cc{font-size:12px;color:#5d5d5d}.cc.over{color:var(--bad);font-weight:700}
+.assets{font-size:13px;margin-top:10px;border-top:1px solid var(--g200);padding-top:8px}
+.assets div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--g200);padding:2px 0}
+.walk{counter-reset:w;list-style:none;padding:0;margin:0}
+.walk li{counter-increment:w;position:relative;padding:10px 12px 10px 48px;border:1px solid var(--g200);border-radius:6px;margin:0 0 8px}
+.walk li::before{content:counter(w);position:absolute;left:12px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font:700 15px/26px Barlow;text-align:center}
+.what{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.what .card h4{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dk{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.dk div{border:1px solid var(--g200);border-top:4px solid var(--green);border-radius:6px;padding:12px 14px}
+.dk span{display:block;font:600 13px Barlow,Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#5d5d5d}
+.dk b{display:block;font:700 30px/1.15 Barlow,Arial,sans-serif;color:var(--ink9);margin-top:4px}
+.dk small{font-size:13px;color:#5d5d5d}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle;margin-right:4px}
+.dot.g{background:var(--ok)}.dot.a{background:#E0A800}.dot.r{background:var(--bad)}
+.dstores{grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.sc{border:1px solid var(--g200);border-radius:6px;padding:14px;cursor:pointer;background:#fff;text-align:left;font:inherit;color:inherit;width:100%;display:flex;flex-direction:column;justify-content:flex-start}
+.sc[aria-pressed=true]{border:2px solid var(--green);box-shadow:0 0 0 2px rgba(0,122,51,.12)}
+.sc h4{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;font-size:20px;text-transform:uppercase}
+.sc .row{display:flex;justify-content:space-between;font-size:15px;border-bottom:1px solid var(--g100);padding:3px 0}
+.sc .row b{font-family:Barlow,Arial,sans-serif;font-weight:700}
+.sc ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+.dlist{padding-left:20px;margin:0}.dlist li{margin:0 0 10px}
+.attn{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--g200);border-left:4px solid #E0A800;border-radius:6px;padding:10px 12px;margin:0 0 10px;font-size:15px}
+.attn button{flex:0 0 auto}
+.grid{display:grid;gap:24px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{border:1px solid var(--g200);border-radius:6px;padding:16px;background:#fff}
+.card.hl{border:2px solid var(--green)}
+.btn{display:inline-block;border:1px solid var(--green);background:var(--green);color:#fff;font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:10px 16px;border-radius:0;cursor:pointer;text-decoration:none}
+.btn.out{background:#fff;color:var(--green)}
+.btn.warn{background:#fff;color:var(--warn);border-color:var(--warn)}
+.btn.bad{background:#fff;color:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border:1px solid;vertical-align:middle;white-space:nowrap}
+.chip.real{color:var(--green);border-color:var(--green)}
+.chip.asm{background:var(--yellow);color:#000;border-color:var(--yellow)}
+.chip.sim{color:#fff;background:var(--sim);border-color:var(--sim)}
+.chip.ok{color:var(--ok);border-color:var(--ok)}
+.chip.warn{color:var(--warn);border-color:var(--warn)}
+.chip.bad{color:var(--bad);border-color:var(--bad)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:14px;margin:0 0 18px}
+.tbl{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font-weight:600;text-transform:uppercase;font-size:13px;letter-spacing:.04em;text-align:left;color:var(--ink9);border-bottom:2px solid var(--green);padding:8px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--g200);padding:8px;vertical-align:top}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pimg{width:44px;height:44px;object-fit:contain;background:#fff;border:1px solid var(--g200);border-radius:6px;vertical-align:middle;margin-right:8px}
+.item{display:flex;align-items:center;gap:8px;min-width:220px}
+.code{font-size:13px;color:#5d5d5d}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;counter-reset:f}
+.flow .st{border:1px solid var(--g200);border-top:4px solid var(--green);border-radius:6px;padding:12px;font-size:15px}
+.flow .st b{display:block;font:600 15px Barlow,Arial,sans-serif;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.flow .st.gate{border-top-color:var(--charcoal);background:var(--g100)}
+.flow .st.gate b{color:var(--ink9)}
+.q{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-bottom:1px solid var(--g200);padding:10px 0}
+.q label{font-weight:700}
+.q .hint{font-size:14px;color:#5d5d5d;grid-column:1/-1;margin-top:-6px}
+input[type=number],select,textarea{font:16px "News Cycle",Arial,sans-serif;border:1px solid #b9b9b9;border-radius:0;padding:8px;background:#fff;color:var(--ink)}
+input[type=number]{width:110px}
+textarea{width:100%;min-height:64px}
+.stores{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+.seg{display:flex;flex-wrap:wrap;border:1px solid var(--green);width:max-content;max-width:100%}
+.seg button{background:#fff;color:var(--green);border:0;border-right:1px solid var(--green);padding:8px 12px;font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--green);color:#fff}
+.camp{border:1px solid var(--g200);border-radius:6px;margin:0 0 28px;overflow:hidden}
+.camp .top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:16px;border-bottom:1px solid var(--g200);flex-wrap:wrap}
+.camp .top h3{margin:0}
+.camp .body{padding:16px}
+.ad{border:1px solid var(--g200);border-radius:6px;overflow:hidden;font-size:15px}
+.ad .img{background:var(--charcoal);color:#fff;padding:18px 16px;min-height:120px;display:flex;flex-direction:column;justify-content:flex-end}
+.ad .img .h{font:700 24px/1.05 Barlow,Arial,sans-serif;text-transform:uppercase}
+.ad .img .s{font-size:16px;margin-top:4px}
+.ad .img .b{margin-top:10px;align-self:flex-start;background:#fff;color:var(--green);font:600 13px Barlow,Arial,sans-serif;text-transform:uppercase;padding:6px 10px}
+.ad .meta{padding:8px 12px;color:#5d5d5d;font-size:13px}
+.proj td.base{font-weight:700;color:var(--ink9)}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+details{border-top:1px solid var(--g200);padding:10px 0}
+summary{cursor:pointer;font:600 15px Barlow,Arial,sans-serif;text-transform:uppercase;color:var(--green)}
+.status{font:600 14px Barlow,Arial,sans-serif;text-transform:uppercase;margin-top:10px}
+.log{font-size:14px;background:var(--g100);border-radius:6px;padding:10px;margin-top:10px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:150px;border-bottom:1px solid var(--g500);padding-top:8px}
+.bars .h{flex:1;display:flex;gap:1px;align-items:flex-end;height:100%;position:relative;cursor:pointer}
+.bars .h i{display:block;flex:1}
+.bars .h .sp{background:#9a9a9a}.bars .h .rv{background:var(--green)}
+.bars .h.ev::after{content:"";position:absolute;top:-6px;left:50%;width:6px;height:6px;margin-left:-3px;background:var(--warn);border-radius:50%}
+.bars .h[aria-pressed=true]{outline:2px solid var(--charcoal)}
+.axis{display:flex;gap:3px;font-size:11px;color:#5d5d5d}.axis span{flex:1;text-align:center}
+.score td .chip{font-size:11px}
+.rep{border:1px solid var(--g200);border-radius:6px;padding:16px}
+.rep ol{padding-left:20px;margin:0}
+.rep li{margin:0 0 14px}
+.rep li b.k{font:600 15px Barlow,Arial,sans-serif;text-transform:uppercase;display:block;color:var(--ink9)}
+.adj{border:1px solid var(--g200);border-left:4px solid var(--charcoal);border-radius:6px;padding:14px;margin:0 0 14px}
+footer{background:var(--charcoal);color:#ddd;padding:28px 16px;font-size:14px}
+footer .in{max-width:1180px;margin:0 auto;display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+footer img{height:28px;filter:brightness(0) invert(1)}
+footer a{color:#fff}
+.sr{position:absolute;left:-9999px}
+@media (max-width:600px){h2{font-size:32px}.band{padding:22px 16px}.head .gate{margin-left:0}body{font-size:16px}}
+</style>
+</head>
+<body>
+<div class="util"><span>CONCEPT DEMO · PPC CAMPAIGN AGENT</span><span>Data as of Mon, Oct 19, 2026 · Four stores: Santa Rosa, Petaluma, Sonoma, Ukiah</span></div>
+<div class="head"><img src="__LOGO__" alt="Friedman's, Growing Together for 80 Years"><div class="ttl">PPC Campaign Agent</div><button class="gate" id="gateChip" type="button">Gate 1: waiting on you</button></div>
+<nav class="tabs" role="tablist" aria-label="Sections">
+ <button class="tab" role="tab" data-g="ov" aria-selected="true">Overview</button>
+ <button class="tab" role="tab" data-g="dash">Dashboard</button>
+ <button class="tab" role="tab" data-g="plan">Plan</button>
+ <button class="tab" role="tab" data-g="camp">Campaigns</button>
+ <button class="tab" role="tab" data-g="mon">Monitor</button>
+ <button class="tab" role="tab" data-g="learn">Learnings</button>
+ <button class="tab" role="tab" data-g="src">Sources</button>
+</nav>
+<div class="subnav" id="subnav" hidden></div>
+<main>
+<div class="legend"><b>Every number is tagged:</b> <span><span class="chip real">Real</span> read from a source</span> <span><span class="chip asm">Assumption</span> working answer, flagged to its owner</span> <span><span class="chip sim">Simulated</span> stands in for Friedman's internal data</span></div>
+
+<!-- OVERVIEW -->
+<!-- DASHBOARD -->
+<section id="dash" hidden>
+ <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+  <div><h2 style="margin-bottom:0">All Campaigns</h2><p class="small muted" style="margin:4px 0 0">Performance as of Sat, Oct 31, 10 p.m. <span class="chip sim">Simulated</span> · Stock and weather as of Mon, Oct 19 <span class="chip real">Real</span></p></div>
+  <div class="seg" id="dStores" role="group" aria-label="Store filter"></div>
+ </div>
+ <div class="dk" id="dKpis"></div>
+ <div class="grid g2" style="margin-top:8px">
+  <div><h3>Needs attention</h3><div id="dAttn"></div></div>
+  <div><h3>Insights</h3><ul class="dlist" id="dIns"></ul></div>
+ </div>
+ <h3>Stores</h3>
+ <p class="small muted" style="margin-top:-4px">Tap a store to filter everything on this page.</p>
+ <div class="grid dstores" id="dStoreCards"></div>
+ <h3>Campaigns</h3>
+ <div class="tbl"><table id="dCamps"></table></div>
+ <p class="small"><span class="dot g"></span> Healthy &nbsp; <span class="dot a"></span> Watch &nbsp; <span class="dot r"></span> Needs attention. Health combines return on ad spend against break-even, stock at the store, and weather alerts.</p>
+</section>
+
+<section id="ov">
+ <div class="band">
+  <h2>Your PPC Campaign Agent</h2>
+  <p>This is a working demo of an AI agent that plans, launches and manages pay-per-click campaigns for Friedman's four stores. It studies what sells each season, the weather, stock, and the neighborhoods around each store. Then it proposes a few focused campaigns, writes the ads, watches results every hour and reports every 8 hours. A person approves every dollar it spends.</p>
+  <div class="kpis" id="ovKpis"></div>
+ </div>
+ <h3>What this demo does</h3>
+ <div class="what">
+  <div class="card"><h4>Dashboard <button class="btn out" data-go="dash">Open</button></h4>One screen for all campaigns: totals, what needs a decision, plain-language insights, and a health card for each store.</div>
+  <div class="card"><h4>Plan <button class="btn out" data-go="f1">Open</button></h4><b>Best sellers</b> from 3 seasons with a forecast you can review and override. <b>Outside forces</b> such as El Niño, rain, frost, smoke and stock. <b>Audience</b> and buying triggers, <b>where to spend</b>, and optional <b>buyer segments</b> like contractors and new homeowners.</div>
+  <div class="card"><h4>Campaigns <button class="btn out" data-go="f5">Open</button></h4>3 to 5 proposed campaigns with spend, return and profit ranges you can trace to a source. The ads for every channel, ready for approval. Purchasing and finance <b>confirmations</b>, and the launch checklist.</div>
+  <div class="card"><h4>Monitor <button class="btn out" data-go="f6">Open</button></h4>Hourly results, 8-hour reports, and suggested adjustments, each with a funnel diagnosis and a fix. <b>Opportunity alerts</b> turn frost, storms, floods or smoke into ready-to-approve flash campaigns.</div>
+  <div class="card"><h4>Learnings <button class="btn out" data-go="learn">Open</button></h4>What worked, what didn't, every adjustment and decision, and the starting numbers to reuse for the same season next year.</div>
+  <div class="card"><h4>Sources <button class="btn out" data-go="src">Open</button></h4>Every data source and what's real, assumed or simulated in this demo.</div>
+ </div>
+ <h3>Try it in five minutes</h3>
+ <ol class="walk">
+  <li><b>Dashboard:</b> see all campaigns and how each store is doing. Tap a store card to filter. <button class="btn out" data-go="dash">Go</button></li>
+  <li><b>Campaigns, Proposals:</b> approve Gutter Gear Before The Rain at Gate 1. <button class="btn out" data-go="f5">Go</button></li>
+  <li><b>Campaigns, Ad samples:</b> approve its Google ads. Character limits and brand rules are already checked. <button class="btn out" data-go="ads">Go</button></li>
+  <li><b>Campaigns, Confirmations:</b> confirm the gutter guard deliveries for Purchasing. Back in Proposals, Gate 2 unlocks. <button class="btn out" data-go="conf">Go</button></li>
+  <li><b>Monitor, Results:</b> open an adjustment to see its funnel diagnosis and fix, then approve or rework it. <button class="btn out" data-go="f6">Go</button></li>
+  <li><b>Monitor, Opportunity alerts:</b> trigger "Frost tonight" and review the flash campaign the agent drafts. <button class="btn out" data-go="alr">Go</button></li>
+  <li><b>Learnings:</b> every decision you made is logged here, ready for next season. Download it as a file. <button class="btn out" data-go="learn">Go</button></li>
+ </ol>
+ <h3>How the agent works</h3>
+ <div class="flow">
+  <div class="st"><b>1 Best sellers</b>3 seasons of top items and bundles, store by store, with a forecast.</div>
+  <div class="st"><b>2 Outside forces</b>Weather, El Niño, smoke, outages, promotions, low and deep stock.</div>
+  <div class="st"><b>3 Audience</b>Who lives near each store and what triggers a purchase.</div>
+  <div class="st"><b>4 Where to spend</b>Areas, opted-in audiences, search interest and channel mix.</div>
+  <div class="st"><b>5 Campaigns and ads</b>3 to 5 tests with traceable projections and ready-to-run ads.</div>
+  <div class="st gate"><b>Gate 1 · Pick</b>You approve, rework or decline each test.</div>
+  <div class="st gate"><b>Gate 2 · Launch</b>You sign off on the exact build once stock is confirmed.</div>
+  <div class="st"><b>6 Monitor</b>Hourly checks, 8-hour reports, diagnoses, weather alerts.</div>
+  <div class="st gate"><b>Gate 3 · Adjust</b>Any change that adds spend or changes targeting or ads.</div>
+  <div class="st"><b>7 Learn</b>Results, decisions and lessons saved for the next season.</div>
+ </div>
+ <h3>What's real in this demo</h3>
+ <div class="grid g3">
+  <div class="card"><h4><span class="chip real">Real</span></h4>66 Friedman's products with prices and on-hand stock at all four stores, read from friedmanshome.com. Also this week's Weekly Ad, NWS forecasts and alerts, NOAA weather history, Google Trends, Census, BLS and home-sales data, industry margins, and 2026 ad benchmarks.</div>
+  <div class="card"><h4><span class="chip asm">Assumption</span></h4>Working answers the agent flags to their owners: 38% margin and 5% returns (Finance), the $10,000 test budget (Marketing), alert response rates, and lead times.</div>
+  <div class="card"><h4><span class="chip sim">Simulated</span></h4>Anything that needs Friedman's private systems: three seasons of sales (calibrated to the real data above), purchase orders, opted-in audiences, Pro and business accounts, and all campaign results.</div>
+ </div>
+ <h3>Making it live</h3>
+ <p>Everything in this demo is how the live agent would work. Going live means swapping simulated data for Friedman's own systems, with no change in logic. The agent runs as Claude with seven skills: brand guidelines, research, campaigns, monitoring, buyer segments, opportunity alerts, and learnings.</p>
+ <div class="tbl"><table>
+  <tr><th>Connect</th><th>Replaces</th></tr>
+  <tr><td>Sana catalog and stock API</td><td>The public stock reads (same data, hourly)</td></tr>
+  <tr><td>POS or ERP sales, cost and returns</td><td>Simulated sales history, margin and return assumptions</td></tr>
+  <tr><td>Purchasing open POs and vendor lead times</td><td>Simulated delivery dates</td></tr>
+  <tr><td>Google Ads, Meta, Nextdoor and TikTok accounts</td><td>Benchmarks, then simulated results; launches and adjustments after approval</td></tr>
+  <tr><td>GA4, offline conversion import</td><td>Simulated funnel and in-store sales attribution</td></tr>
+  <tr><td>Email and SMS platforms (opted-in lists)</td><td>Simulated audiences and response rates</td></tr>
+  <tr><td>NWS and AirNow</td><td>Already live in this demo; checked hourly</td></tr>
+ </table></div>
+ <ol class="walk" style="margin-top:14px">
+  <li><b>Week 1, read only:</b> connect the systems above and backtest on Friedman's real sales.</li>
+  <li><b>Weeks 2 and 3, shadow mode:</b> the agent proposes and reports; people run campaigns as today and compare.</li>
+  <li><b>Week 4, first tests:</b> approved campaigns go live with small caps. Every decision is logged.</li>
+  <li><b>After that:</b> add standing pre-approvals for weather alerts, and let each season's learnings set the next season's plan.</li>
+ </ol>
+ <h3>Guardrails</h3>
+ <div class="grid g3">
+  <div class="card"><h4>Never without approval</h4>Raising a budget, bid or cap. New audiences, areas, keywords, channels or ads. Extending a test. Resuming a safety pause.</div>
+  <div class="card"><h4>Protective actions only</h4>The agent may pause for a stock-out, a spend cap, an evacuation or unhealthy air, a broken page or lost tracking. Each is reported within the hour.</div>
+  <div class="card"><h4>Honest numbers</h4>Every projection shows its formula, inputs and sources as a low, base and high range. Simulated and assumed numbers are labeled wherever they appear.</div>
+  <div class="card"><h4>Consent and care</h4>Opted-in lists only, platform-hashed. Texts end with "Reply STOP to opt out." No fear marketing around fires, floods or outages, and never into an evacuation zone.</div>
+ </div>
+</section>
+
+<!-- CONFIRMATIONS -->
+<section id="conf" hidden>
+ <h2>Confirmations</h2>
+ <p class="lead">The agent doesn't stop to ask. It answers from the data, sends each answer to its owner, and keeps working. Gate 2 waits for Purchasing to confirm the stock flags on that campaign. Change a working answer and every projection recalculates.</p>
+ <h3>Purchasing: projected deliveries</h3>
+ <p class="small">Delivery dates come from <span class="chip sim">Simulated</span> purchase orders and vendor lead times. Stock on hand is <span class="chip real">Real</span>.</p>
+ <div class="tbl"><table id="poTbl"></table></div>
+ <h3>Finance and marketing</h3>
+ <div class="tbl"><table id="cfTbl"></table></div>
+</section>
+
+<!-- AD SAMPLES -->
+<section id="ads" hidden>
+ <h2>Ad Samples</h2>
+ <p class="lead">The actual ads for every channel in the proposals, written in Friedman's voice and checked automatically: Google's character limits, TikTok's text limit, a single-text SMS, no prices, no dashes, no unsupported claims, and SHOP plus a category. Approve each one, or send it back with notes. Gate 2 waits until a campaign's ads are approved.</p>
+ <div class="seg" id="adCamps" role="group" aria-label="Campaign"></div>
+ <div id="adList" style="margin-top:16px"></div>
+</section>
+
+<!-- LEARNINGS -->
+<section id="learn" hidden>
+ <h2>Learnings</h2>
+ <p class="lead">At the end of every test, and after every decision, the agent saves what happened. Each record holds the conditions, what was projected, what actually happened, the adjustments, and the lessons. Next season, the research step loads the records for the same season and similar conditions. It starts from those real numbers instead of industry benchmarks.</p>
+ <div class="btns" style="margin-bottom:12px"><button class="btn" id="dlLearn" type="button">Download learnings (JSON)</button></div>
+ <h3>Season lessons</h3>
+ <ul class="dlist" id="lSeason"></ul>
+ <h3>Results by campaign line <span class="chip sim">Simulated results</span></h3>
+ <div class="card small" id="lCond" style="margin-bottom:12px"></div>
+ <div class="tbl"><table id="lTbl"></table></div>
+ <h3>Starting numbers for next fall</h3>
+ <p class="small">What the agent will use instead of benchmarks next season, from lines that worked.</p>
+ <div class="tbl"><table id="lStart"></table></div>
+ <h3>Decision log</h3>
+ <p class="small">Everything you approve, rework, decline, confirm or override in this demo is recorded here, with the time.</p>
+ <div class="log" id="lLog">No decisions yet.</div>
+</section>
+
+<!-- F1 -->
+<section id="f1" hidden>
+ <h2>Seasonal Best Sellers</h2>
+ <p class="lead">Oct 19 to Nov 15 in each of the last 3 years, ranked by gross margin dollars. Sales history is <span class="chip sim">Simulated</span>, but calibrated to real data: each item's weekly rate comes from its real on-hand at that store (Oct 19) divided by 8 weeks of supply, and each year's shape comes from real Google Trends and NOAA weather for that window. Products and prices are <span class="chip real">Real</span>.</p>
+ <div class="seg" id="f1Stores" role="group" aria-label="Store"></div>
+ <div class="card" style="margin-top:14px">
+  <label for="fcMethod"><b>Forecast method for review</b></label>
+  <select id="fcMethod" style="margin-left:8px">
+   <option value="agent">Agent's pick per item (recommended)</option>
+   <option value="weighted">Weighted mean, 50/30/20 recent first</option>
+   <option value="median">Median</option>
+   <option value="mean">Mean</option>
+   <option value="analog">El Niño analog (2023, measured)</option>
+   <option value="all">Compare all methods</option>
+  </select>
+  <p class="small" style="margin:10px 0 0" id="fcExplain"></p>
+ </div>
+ <div class="tbl" style="margin-top:14px"><table id="f1Tbl"></table></div>
+ <div class="log" id="fcLog" hidden></div>
+ <h3>What drives each year <span class="chip real">Real</span></h3>
+ <div class="tbl"><table id="f1Idx"></table></div>
+ <h3>Backtest: forecast 2025 from 2023 and 2024</h3>
+ <p class="small">Average miss per item and store (lower is better), against the calibrated 2025 history. <span class="chip sim">Simulated</span> sales, <span class="chip real">Real</span> drivers.</p>
+ <div class="tbl"><table id="f1Bt"></table></div>
+ <h3>What the agent took from it</h3>
+ <div class="grid g3">
+  <div class="card"><h4>El Niño is not a sales forecast</h4>The 2023-24 El Niño season was drier at Santa Rosa (37.6 in.) than the 2022-23 La Niña season (42.6 in.), and Bay Area searches for tarps didn't rise in its Oct to Nov window. Sandbag searches spiked when storms actually hit, in January 2023. The agent plans a normal baseline and lets each forecast storm trigger a burst.</div>
+  <div class="card"><h4>Rain explains storm sales</h4>In the backtest, adjusting for actual window rain cut the storm-item miss from about 27% to under 10%. That is why Gutter Gear and Storm Ready run 48-hour bursts off NWS forecasts instead of steady spend.</div>
+  <div class="card"><h4>Gutter guard is already moving</h4>Santa Rosa went from 84 Amerimax gutter guard sections on Oct 18 to 71 on Oct 19, ahead of this week's first rain (<span class="chip real">Real</span> on-hand reads). Soil and frost items barely moved.</div>
+ </div>
+ <h3>Observed one-day sell-through, Santa Rosa <span class="chip real">Real</span></h3>
+ <p class="small">On-hand on Oct 18 vs Oct 19 from friedmanshome.com. Net of any deliveries, so a gain shows as a negative number.</p>
+ <div class="tbl"><table id="f1Sell"></table></div>
+ <h3>Project bundles</h3>
+ <div class="grid g2" id="f1Bundles"></div>
+</section>
+
+<!-- F2 -->
+<section id="f2" hidden>
+ <h2>Outside Forces</h2>
+ <p class="lead">What changes the plan this season, with the evidence and the adjustment the agent made.</p>
+ <div class="grid g2" id="f2Cards"></div>
+ <h3>Stock check for every advertised item</h3>
+ <p class="small">Rule: on-hand plus confirmed inbound must cover 2 weeks of expected ad-driven demand at that store. On-hand at all four stores is <span class="chip real">Real</span>, read from Friedman's site at 4:12 p.m. Oct 19. Expected demand comes from the base projection. Short items go to Purchasing with a projected delivery (Overview).</p>
+ <div class="tbl"><table id="f2Stock"></table></div>
+</section>
+
+<!-- F3 -->
+<section id="f3" hidden>
+ <h2>Audience &amp; Triggers</h2>
+ <p class="lead">Who lives around each store, what moves them, and the moments that turn "someday" into "this weekend."</p>
+ <h3>Demographics <span class="chip real">Real</span></h3>
+ <div class="tbl"><table id="f3Demo"></table></div>
+ <p class="small muted">Census QuickFacts, ACS 5-year 2019 to 2023. City figures stand in for trade areas until POS customer ZIPs are available.</p>
+ <h3>Psychographics <span class="chip asm">Inference</span></h3>
+ <div class="grid g2">
+  <div class="card"><h4>Preparedness is personal here</h4>Sonoma County lived through the Tubbs (2017), Kincade (2019) and Glass (2020) fires; Kincade brought the largest evacuation in county history. Messages about getting ready land, but only in a calm, helpful tone.</div>
+  <div class="card"><h4>Owners with projects</h4>Petaluma and Sonoma have about 64% owner-occupied homes and median values of $834,900 and $954,300. They spend on the house and the garden, and value advice.</div>
+  <div class="card"><h4>Smaller households in Sonoma</h4>About 2 people per household, with the highest per-capita income of the four cities. Likely older; convenience, pickup and a 15-minute consult matter.</div>
+  <div class="card"><h4>Practical and budget-minded in Ukiah</h4>Median income $67,122 and a majority of renters. Small, quick fixes and frost protection; strong response to timely, local reminders.</div>
+  <div class="card"><h4>Bilingual households</h4>About 29% of Sonoma County and 27% of Mendocino County residents are Hispanic. The agent proposes Spanish ad variants as their own test line, never as targeting by ethnicity.</div>
+  <div class="card"><h4>Gardeners and growers</h4>Wine country, clay soil and long falls. Fall planting is a known local habit, and the content agent's planting post already supplies the how-to.</div>
+ </div>
+ <h3>Buying triggers the agent watches</h3>
+ <div class="tbl"><table id="f3Trig"></table></div>
+</section>
+
+<!-- F4 -->
+<section id="f4" hidden>
+ <h2>Where To Spend</h2>
+ <p class="lead">Scores each store's trade area on customers, reachable opted-in audiences, search demand and fit, then sets the geo split and the channel job for each campaign.</p>
+ <div class="tbl"><table id="f4Areas"></table></div>
+ <h3>Search interest, Bay Area <span class="chip real">Real</span></h3>
+ <p class="small">Google Trends, San Francisco-Oakland-San Jose market, weekly, Jan 2023 to Oct 2026. 100 = the peak week across these five terms. Local volumes and CPCs come from Keyword Planner once an ad account is connected.</p>
+ <div id="f4Search"></div>
+ <h3>Geo split by campaign</h3>
+ <div class="tbl"><table id="f4Geo"></table></div>
+ <h3>Channel jobs</h3>
+ <div class="grid g3">
+  <div class="card"><h4>Google Search + Performance Max</h4>People already searching. Local inventory ads show what's on the shelf at the nearest store.</div>
+  <div class="card"><h4>Meta</h4>Reach and retargeting inside each trade area, plus custom audiences from opted-in lists with ad consent.</div>
+  <div class="card"><h4>Nextdoor</h4>Neighborhood reach for preparedness. No public benchmark, so it runs as a small learning test.</div>
+  <div class="card"><h4>TikTok</h4>Short how-to video, reused from the content agent's approved posts.</div>
+  <div class="card"><h4>Email and SMS</h4>No media cost. Opted-in only, triggered by frost and storm forecasts, sequenced with paid bursts.</div>
+ </div>
+</section>
+
+<!-- F5 -->
+<section id="f5" hidden>
+ <h2>Proposed Test Campaigns</h2>
+ <p class="lead" id="f5Lead"></p>
+ <div class="card" style="margin-bottom:24px"><b>How every projection is built.</b> Clicks = spend ÷ CPC. Orders = clicks × conversion rate. Revenue = orders × basket value. Profit after ads = revenue × (1 − return rate) × gross margin − spend. Break-even ROAS = 1 ÷ (margin × (1 − returns)) = <b id="beNum"></b>. Basket values use <span class="chip real">Real</span> prices. CPC and conversion rates are published 2026 benchmarks (sources on each line) until Friedman's own account history exists. In-store halo sales are not counted.</div>
+ <div id="camps"></div>
+ <h3>Gate 2 · Launch</h3>
+ <p class="small">Approved campaigns are built paused in each platform, then checked here before anything goes live.</p>
+ <div id="gate2"><p class="muted">Approve a campaign at Gate 1 to see its launch packet.</p></div>
+</section>
+
+<!-- F6 -->
+<section id="f6" hidden>
+ <h2>Monitoring</h2>
+ <p class="lead">A preview of Sat, Oct 31, 2026, as if the recommended tests were approved and running (Gutter Gear day 11, Fall Planting day 10, Storm Ready day 4). A smoke day starts at 1 p.m. in the Ukiah area, which pauses outdoor creative there and switches on the approved Clean Air standby. <span class="chip sim">Simulated</span> throughout: no ad, social or POS data is connected in this demo.</p>
+ <h3>Test to date</h3>
+ <div class="tbl"><table id="f6Score" class="score"></table></div>
+ <h3>Hourly check, Sat Oct 31</h3>
+ <p class="small">Gray: spend. Green: revenue. Orange dot: an event the agent acted on. Tap an hour for its detail.</p>
+ <div class="bars" id="bars" role="group" aria-label="Hourly spend and revenue"></div>
+ <div class="axis" id="axis"></div>
+ <div class="log" id="hourDetail">Tap an hour.</div>
+ <h3>8-hour reports</h3>
+ <div class="seg" id="repTabs" role="group" aria-label="Report"></div>
+ <div class="rep" id="rep" style="margin-top:12px"></div>
+ <h3>Gate 3 · Adjustments waiting on you</h3>
+ <div id="adjq"></div>
+</section>
+
+<!-- ALERTS -->
+<section id="alr" hidden>
+ <h2>Opportunity Alerts</h2>
+ <p class="lead">The agent checks the National Weather Service for every store's zone each hour. When a rule fires, such as frost tonight or severe thunderstorms nearby, it drafts a ready-to-approve flash campaign. Each draft comes with goals, projections, targeting, in-stock products, a budget from the reserve, safety notes and store-ops tasks. Nothing launches without approval unless you've pre-approved that alert type with a spending cap.</p>
+ <div class="card" id="alReserve"></div>
+ <h3>Live scan <span class="chip real">Real</span></h3>
+ <p class="small" id="alScanNote"></p>
+ <div class="grid g2" id="alLive"></div>
+ <h3>Alert rules</h3>
+ <div class="tbl"><table id="alRules"></table></div>
+ <h3>Try an alert <span class="chip sim">Simulated</span></h3>
+ <p class="small">Each button feeds a simulated NWS or AirNow alert into the same engine. The products, stock, prices and benchmarks it uses are real.</p>
+ <div class="btns" id="alSims"></div>
+ <h3>Drafted flash campaigns</h3>
+ <div id="alDrafts"><p class="muted">No drafts yet. The live scan's watch-level draft appears here, along with any you trigger above.</p></div>
+</section>
+
+<!-- SEGMENTS -->
+<section id="seg" hidden>
+ <h2>Buyer Segments</h2>
+ <p class="lead">More targeted tests aimed at groups Friedman's already knows, or can find. Each segment is sized with real public data where it exists and simulated Friedman's data where it doesn't. The agent flags a segment to explore only when the data supports it. Segments are optional: nothing here joins a campaign unless you add it to Gate 1.</p>
+ <div class="legend"><span><span class="chip ok">Explore</span> data supports a test</span> <span><span class="chip warn">Watch</span> depends on data the demo doesn't have</span> <span><span class="chip sim">Covered</span> already part of a campaign</span></div>
+ <div id="segCards"></div>
+</section>
+
+<!-- SOURCES -->
+<section id="src" hidden>
+ <h2>Data &amp; Sources</h2>
+ <div class="tbl"><table>
+  <tr><th>Data</th><th>Status in demo</th><th>Live source at Friedman's</th></tr>
+  <tr><td>Products, item numbers, prices</td><td><span class="chip real">Real</span> friedmanshome.com, Oct 18 and 19, 2026 (66 items)</td><td>Sana catalog or Merchant Center feed</td></tr>
+  <tr><td>On-hand stock</td><td><span class="chip real">Real</span> all four stores, Oct 19, 4:12 p.m. (Sana warehouse data on the public site)</td><td>Sana on-hand by store</td></tr>
+  <tr><td>One-day sell-through</td><td><span class="chip real">Real</span> Santa Rosa, Oct 18 vs Oct 19</td><td>POS daily sales</td></tr>
+  <tr><td>Current promotion</td><td><span class="chip real">Real</span> Weekly Ad: Pro Tool Days, Oct 19 to 25</td><td>Weekly Ad calendar</td></tr>
+  <tr><td>Purchase orders and delivery dates</td><td><span class="chip sim">Simulated</span> vendor lead times; flagged to Purchasing</td><td>Open POs and vendor lead times from Purchasing</td></tr>
+  <tr><td>3-year seasonal sales</td><td><span class="chip sim">Simulated</span>, calibrated to real on-hand, Google Trends and NOAA weather</td><td>POS or ERP export with cost and returns</td></tr>
+  <tr><td>Margins and return rate</td><td><span class="chip asm">Assumption</span> 38% from NHPA 2025 benchmarks; flagged to Finance</td><td>Finance</td></tr>
+  <tr><td>Weather history and forecasts, El Niño, fire and smoke</td><td><span class="chip real">Real</span> NOAA ACIS, NWS, NOAA CPC, Governor's office, local news</td><td>Same, checked hourly</td></tr>
+  <tr><td>Live weather alerts and forecasts per store</td><td><span class="chip real">Real</span> NWS API, Oct 19 scan; alert simulator is <span class="chip sim">Simulated</span></td><td>NWS and AirNow, checked hourly</td></tr>
+  <tr><td>Search interest</td><td><span class="chip real">Real</span> Google Trends, Bay Area market (one batch of 5 terms; a second batch was rate-limited)</td><td>Keyword Planner, Search Console</td></tr>
+  <tr><td>Demographics, movers, home sales</td><td><span class="chip real">Real</span> Census QuickFacts, ATTOM</td><td>Census ACS by ZIP, POS customer ZIPs, new-mover lists</td></tr>
+  <tr><td>Businesses by industry</td><td><span class="chip real">Real</span> BLS QCEW, Q1 2025</td><td>Same, plus Friedman's Pro and business accounts</td></tr>
+  <tr><td>Opted-in audiences, Pro and business accounts</td><td><span class="chip sim">Simulated</span></td><td>Email and SMS platforms, POS, Pro Advantage</td></tr>
+  <tr><td>CPC, conversion rate benchmarks</td><td><span class="chip real">Real</span> published 2026 benchmarks</td><td>Friedman's own ad account history</td></tr>
+  <tr><td>Hourly monitoring and reports</td><td><span class="chip sim">Simulated</span></td><td>Google Ads, Meta, Nextdoor, TikTok, GA4, POS</td></tr>
+ </table></div>
+ <h3>Sources</h3>
+ <ul id="srcList" class="small"></ul>
+</section>
+</main>
+<footer><div class="in">
+ <div><img src="__LOGO__" alt="Friedman's"><p>Concept demo by Jason Dodge for discussion. Not affiliated with or endorsed by Friedman's Home Improvement.</p></div>
+ <div>Simulated and assumed numbers are labeled wherever they appear. No ad accounts, POS or customer data are connected. Nothing in this demo spends money or sends a message.</div>
+ <div>Store addresses: Santa Rosa, 4055 Santa Rosa Ave · Petaluma, 429 N McDowell Blvd · Sonoma, 1360 Broadway · Ukiah, 1255 Airport Park Blvd.</div>
+</div></footer>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $$=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money=(n,d=0)=>(n<0?'-':'')+'$'+$$(Math.abs(n),d);
+const STORES=D.sim.stores, P=Object.fromEntries(D.products.map(p=>[p.item,p])), IMG=D.imgs;
+const pimg=id=>IMG[id]?`<img class="pimg" src="${IMG[id]}" alt="">`:`<img class="pimg" src="https://www.friedmanshome.com/product/image/medium/${id}_0.jpg" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+const stockLine=st=>STORES.map(s=>`${s} ${st[s]}`).join(' · ');
+const chip=(t,c)=>`<span class="chip ${c}">${t}</span>`;
+let S={ad:{},budget:10000,margin:38,returns:5,lists:'no',spanish:'yes',cf:{},po:{},g1:{},g2:{},g3:{},ver:{},seg:{},gs:{}};
+
+/* tabs */
+const GROUPS={ov:[['ov']],dash:[['dash']],plan:[['f1','Best sellers'],['f2','Outside forces'],['f3','Audience'],['f4','Where to spend'],['seg','Buyer segments']],
+ camp:[['f5','Proposals'],['ads','Ad samples'],['conf','Confirmations']],mon:[['f6','Results'],['alr','Opportunity alerts']],learn:[['learn']],src:[['src']]};
+const GOF=Object.fromEntries(Object.entries(GROUPS).flatMap(([g,l])=>l.map(([s])=>[s,g])));
+function show(sec){const g=GOF[sec]||'ov';document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x.dataset.g===g));
+ const subs=GROUPS[g];const sn=$('#subnav');sn.hidden=subs.length<2;
+ sn.innerHTML=subs.length<2?'':subs.map(([s,l])=>`<button type="button" data-sub="${s}" aria-pressed="${s===sec}">${l}</button>`).join('');
+ sn.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>show(b.dataset.sub));
+ document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!==sec);
+ if(sec==='dash')renderDash();if(sec==='learn')renderLearn();if(sec==='ads')renderAds();window.scrollTo({top:0})}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>show(GROUPS[b.dataset.g][0][0]));
+function go(t){show(t)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&!b.onclick){go(b.dataset.go)}});
+/* decision log */
+const LOG=[];function logD(kind,text){LOG.push({time:new Date().toISOString(),kind,text});const el=document.getElementById('lLog');if(el&&!el.closest('section').hidden)renderLearn()}
+
+/* projection engine (mirrors model.py) */
+function proj(line,aov){const b=D.proj.bench[line.ch];const m=S.margin/100,r=S.returns/100;const out={};
+ [['low',0],['base',1],['high',2]].forEach(([k,i])=>{const cpc=b.cpc[i],cvr=b.cvr[i];const clicks=line.spend/cpc,orders=clicks*cvr,rev=orders*aov,gp=rev*(1-r)*m;
+  out[k]={cpc,cvr,clicks,orders,revenue:rev,roas:rev/line.spend,profit:gp-line.spend}});return out}
+const be=()=>1/((S.margin/100)*(1-S.returns/100));
+function campTotals(c){const t={spend:0,low:{rev:0,p:0},base:{rev:0,p:0},high:{rev:0,p:0}};c.lines.forEach(l=>{const p=proj(l,c.aov);t.spend+=l.spend;['low','base','high'].forEach(k=>{t[k].rev+=p[k].revenue;t[k].p+=p[k].profit})});return t}
+const recCamps=()=>D.proj.campaigns.filter(c=>!c.recommend.startsWith('OWNED'));
+
+const CH={search:'Google Search',pmax:'Performance Max',meta:'Meta',nextdoor:'Nextdoor',tiktok:'TikTok'};
+const CN=id=>D.proj.campaigns.find(c=>c.id===id).name;
+/* overview */
+function renderOv(){const rc=recCamps();let sp=0,pb=0,rv=0;rc.forEach(c=>{const t=campTotals(c);sp+=t.spend;pb+=t.base.p;rv+=t.base.rev});
+ $('#ovKpis').innerHTML=`<div><span>Tests proposed</span><b class="num">${D.proj.campaigns.length}</b></div><div><span>Recommended paid spend, 21 days</span><b class="num">${money(sp)}</b></div><div><span>Projected ROAS, base case</span><b class="num">${(rv/sp).toFixed(2)}x</b></div><div><span>Break-even ROAS</span><b class="num">${be().toFixed(2)}x</b></div><div><span>Projected profit after ads, base</span><b class="num">${money(pb)}</b></div>`}
+const fdate=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+function renderCF(){
+ $('#poTbl').innerHTML=`<tr><th>Item</th><th>By store: on hand, covers demand to, suggested order</th><th>Projected delivery ${chip('Sim','sim')}</th><th>Agent's plan</th><th>Status</th></tr>`+
+ D.der.flags.map(f=>{const st=S.po[f.id];return `<tr><td><div class="item">${pimg(f.item)}<div>${esc(f.name)}<div class="code">#${f.item} · ${f.id} · ${esc(CN(f.cid))}</div></div></div></td>
+  <td class="small" style="min-width:260px">${f.stores.map(x=>`<div${x.late?' class="neg"':''}><b>${x.store}</b>: ${x.on_hand} on hand · covers to ${fdate(x.runs_out).replace(/^\w+, /,'')} · order ${$$(x.order)}</div>`).join('')}</td>
+  <td class="small">${fdate(f.stores[0].eta)}<br><span class="muted">${f.stores[0].lead}-day lead time, PO Oct 20</span></td>
+  <td class="small">${esc(f.plan)}</td>
+  <td>${st==='confirmed'?chip('Confirmed','ok'):st==='changed'?chip('Purchasing changed date','warn'):chip('Flagged to Purchasing','warn')}<div class="btns" style="margin-top:6px"><button class="btn out" data-po="${f.id}" data-v="confirmed" ${st?'disabled':''}>Confirm</button><button class="btn warn" data-po="${f.id}" data-v="changed" ${st?'disabled':''}>Later date</button></div></td></tr>`}).join('');
+ document.querySelectorAll('[data-po]').forEach(b=>b.onclick=()=>{S.po[b.dataset.po]=b.dataset.v;const f=D.der.flags.find(x=>x.id===b.dataset.po);logD('Purchasing',`${f.id} ${f.name.split(',')[0]}: ${b.dataset.v==='confirmed'?'delivery confirmed':'later delivery date reported'}`);renderCF();renderG2();updGateChip()});
+ $('#cfTbl').innerHTML=`<tr><th>Item</th><th>Owner</th><th>Agent's working answer</th><th>Basis</th><th>Status</th></tr>`+
+ D.der.confirm.map(c=>{const st=S.cf[c.id];const num=['budget','margin','returns'].includes(c.kind);
+  const val=num?`<span>${c.kind==='budget'?'$':''}<input type="number" id="cf_${c.kind}" value="${S[c.kind]}" min="1" step="${c.kind==='budget'?500:1}">${c.kind!=='budget'?' %':''}</span>`:`<b>${esc(c.answer)}</b>`;
+  return `<tr><td><b>${esc(c.q)}</b></td><td class="small">${esc(c.owner)}</td><td>${val}</td><td class="small">${esc(c.basis)}</td><td>${st?chip('Confirmed','ok'):chip('Flagged to '+c.owner.split(' ')[0],'warn')}<div class="btns" style="margin-top:6px"><button class="btn out" data-cf="${c.id}" ${st?'disabled':''}>Confirm</button></div></td></tr>`}).join('');
+ ['budget','margin','returns'].forEach(k=>{const el=$('#cf_'+k);if(el)el.onchange=e=>{S[k]=Math.max(1,parseFloat(e.target.value)||1);renderAll()}});
+ document.querySelectorAll('[data-cf]').forEach(b=>b.onclick=()=>{S.cf[b.dataset.cf]=1;logD('Confirmation',`${b.dataset.cf} confirmed`);renderCF()})}
+
+/* F1 */
+let f1Store='Santa Rosa';const FCO={},FCL=[];
+/* forecasting: never mode or plain mean; analog > median (outlier) > weighted */
+/* forecasting: analog only with measured lift AND driver evidence; else median (outlier) or weighted */
+const ANALOG_LIFT=(()=>{let a=0,n=0;Object.values(D.sim.best).forEach(rs=>rs.filter(r=>r.cat==='storm').forEach(r=>{a+=r.units['2023'];n+=(r.units['2024']+r.units['2025'])/2}));return a/n})();
+const ANALOG_OK=false; // the 2023 El Nino window shows no lift in real Trends or rain, so the driver test fails
+function fc(r){const y3=r.units['2023'],y2=r.units['2024'],y1=r.units['2025'];const ys=[y1,y2,y3].sort((a,b)=>a-b);
+ const mean=(y1+y2+y3)/3,median=ys[1],weighted=.5*y1+.3*y2+.2*y3,sens=r.cat==='storm',analog=(.6*y1+.4*y2)*ANALOG_LIFT;
+ const outlier=[y1,y2,y3].some(y=>Math.abs(y-median)/Math.max(1,median)>.25);
+ const pick=sens&&ANALOG_OK?'analog':outlier?'median':'weighted';
+ const why=outlier?(sens?'Storm item with an unusual year (2025 had the wettest window); median keeps a normal baseline, and rain bursts add the rest':'One year is more than 25% off the others'):'Years are consistent; recent years weigh more';
+ const vals=[mean,median,weighted].concat(sens?[analog]:[]).map(Math.round);
+ return {mean:Math.round(mean),median,weighted:Math.round(weighted),analog:Math.round(analog),sens,pick,why,lo:Math.min(...vals),hi:Math.max(...vals)}}
+function renderF1(){$('#f1Stores').innerHTML=STORES.map(s=>`<button aria-pressed="${s===f1Store}" data-s="${s}">${s}</button>`).join('');
+ $('#f1Stores').querySelectorAll('button').forEach(b=>b.onclick=()=>{f1Store=b.dataset.s;renderF1()});
+ const rows=D.sim.best[f1Store];const mode=$('#fcMethod').value;
+ const ML={weighted:'Weighted mean',median:'Median',mean:'Mean',analog:'El Niño analog'};
+ $('#fcExplain').innerHTML=`The agent never uses the mode (unit sales rarely repeat) or a plain mean. It uses the <b>weighted mean</b> (50/30/20, recent first), or the <b>median</b> when one year is more than 25% off the others. It uses an <b>analog year</b> only when the lift is measured in the data and the driver matches this season. The El Niño analog fails that test here: the measured 2023 storm lift is <b>${ANALOG_LIFT.toFixed(2)}x</b>, because the real 2023 window had less rain and no rise in searches. The analog stays in the dropdown for review. Range = lowest to highest of the methods. In Agent's pick view, change any item's method to override it; overrides are logged for the approver.`;
+ const head=mode==='all'?`<th class="n">Mean</th><th class="n">Median</th><th class="n">Weighted</th><th class="n">Analog</th><th class="n">Agent's pick</th>`:`<th class="n">Forecast, this season</th><th>Method</th><th class="n">Range</th>`;
+ $('#f1Tbl').innerHTML=`<tr><th>#</th><th>Item</th><th class="n">2023</th><th class="n">2024</th><th class="n">2025</th>${head}<th class="n">3-yr margin $</th></tr>`+
+ rows.map((r,i)=>{const f=fc(r);const key=f1Store+'|'+r.item;const ov=FCO[key];
+  let cells;
+  if(mode==='all'){cells=['mean','median','weighted'].map(k=>`<td class="n">${f[k]}</td>`).join('')+`<td class="n">${f.sens?f.analog:'<span class="muted">n/a</span>'}</td><td class="n"><b>${f[f.pick]}</b><div class="small muted">${ML[f.pick]}</div></td>`}
+  else{const m=mode==='agent'?(ov||f.pick):mode;const v=m==='analog'&&!f.sens?null:f[m];
+   const sel=mode==='agent'?`<select data-fc="${key}" aria-label="Method for ${esc(r.name)}">${['weighted','median','mean','analog'].filter(k=>k!=='analog'||f.sens).map(k=>`<option value="${k}" ${k===m?'selected':''}>${ML[k]}${k===f.pick?' (agent)':''}</option>`).join('')}</select>${ov?'<div>'+chip('Override','warn')+'</div>':''}<div class="small muted">${ov?'Agent picked '+ML[f.pick]:esc(f.why)}</div>`:`${ML[m]}${m==='analog'&&!f.sens?'<div class="small muted">Not El Niño sensitive</div>':''}`;
+   cells=`<td class="n"><b>${v==null?'n/a':v}</b></td><td>${sel}</td><td class="n">${f.lo} to ${f.hi}</td>`}
+  return `<tr><td>${i+1}</td><td><div class="item">${pimg(r.item)}<div>${esc(r.name)}<div class="code">#${r.item} · ${money(r.price,2)}</div></div></div></td><td class="n">${r.units['2023']}</td><td class="n">${r.units['2024']}</td><td class="n">${r.units['2025']}</td>${cells}<td class="n">${money(r.rev3*S.margin/100)}</td></tr>`}).join('');
+ document.querySelectorAll('[data-fc]').forEach(s=>s.onchange=()=>{const k=s.dataset.fc;const r=D.sim.best[k.split('|')[0]].find(x=>x.item===k.split('|')[1]);
+  if(s.value===fc(r).pick)delete FCO[k];else FCO[k]=s.value;logD('Forecast override',`${k.split('|')[0]}, ${r.name}: ${ML[s.value]}`);FCL.push(`${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}: ${k.split('|')[0]}, ${r.name}: method set to ${ML[s.value]}${s.value===fc(r).pick?' (back to agent pick)':' (reviewer override)'}`);renderF1()});
+ $('#fcLog').hidden=!FCL.length;$('#fcLog').innerHTML='<b>Override log</b> (goes to the approver with the Gate 1 proposal)<br>'+FCL.map(esc).join('<br>');
+ $('#f1Bundles').innerHTML=D.proj.campaigns.map(c=>`<div class="card"><h4>${esc(c.name)}</h4><div class="small muted">${esc(c.theme)}</div>${c.items.map(it=>`<div class="item" style="margin-top:8px">${pimg(it.item)}<div>${it.qty} × ${esc(it.name)}<div class="code">#${it.item} · ${money(it.price,2)}</div></div></div>`).join('')}<div style="margin-top:8px"><b>Typical basket ${money(c.aov,2)}</b> ${chip('Real prices','real')}<div class="small muted">${esc(c.basket_note)}</div></div></div>`).join('');
+ const I=D.sim.idx,Y=['2023','2024','2025'];
+ $('#f1Idx').innerHTML=`<tr><th>Category</th><th>Driver</th>${Y.map(y=>`<th class="n">${y}</th>`).join('')}</tr>`+Object.keys(I).map(k=>`<tr><td>${k[0].toUpperCase()+k.slice(1)}</td><td class="small">${esc(D.sim.driver[k])}</td>${Y.map(y=>`<td class="n">${I[k][y].toFixed(2)}</td>`).join('')}</tr>`).join('')+
+  `<tr><td colspan="5" class="small">Window rain, average of Santa Rosa and Ukiah airports: ${Y.map(y=>`${y} ${D.sim.rain[y].toFixed(2)} in.`).join(' · ')}. First frost at either airport: ${Y.map(y=>`${y} ${fdate(D.sim.frost[y])}`).join(' · ')}. 1.00 = a normal year.</td></tr>`;
+ $('#f1Bt').innerHTML=`<tr><th>Method</th><th class="n">All items</th><th class="n">Storm items</th></tr>`+Object.entries(D.sim.backtest).map(([k,v])=>`<tr><td>${esc(k)}${k.includes('rain')?' <span class="small muted">(rain known after the fact; live, the agent uses the NWS forecast)</span>':''}</td><td class="n">${v.all==null?'n/a':v.all+'%'}</td><td class="n"><b>${v.storm}%</b></td></tr>`).join('');
+ $('#f1Sell').innerHTML=`<tr><th>Item</th><th class="n">Oct 18</th><th class="n">Oct 19</th><th class="n">Change</th></tr>`+D.sim.sell.map(x=>`<tr><td>${esc(x.name)}<div class="code">#${x.item}</div></td><td class="n">${x.oct18}</td><td class="n">${x.oct19}</td><td class="n ${x.delta>0?'pos':''}">${x.delta>0?'−'+x.delta+' sold':'+'+(-x.delta)+' received'}</td></tr>`).join('')}
+
+/* F2 */
+function renderF2(){$('#f2Cards').innerHTML=D.forces.map(f=>`<div class="card ${f.hl?'hl':''}"><h4>${esc(f.t)}</h4><div>${chip(f.status,f.status==='Real'?'real':f.status==='Simulated'?'sim':'asm')} <span class="small muted">As of ${esc(f.asof)}</span></div><p>${esc(f.ev)}</p><p><b>Adjustment:</b> ${esc(f.adj)}</p><div class="small">${f.src.map(s=>`<a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a>`).join(' · ')}</div></div>`).join('');
+ const cls={PASS:'ok','CHECK INBOUND':'warn',SHORT:'bad'};
+ $('#f2Stock').innerHTML=`<tr><th>Campaign</th><th>Item</th><th class="n">Per order</th>${STORES.map(s=>`<th class="n">${s}<br><span class="small" style="text-transform:none">on-hand / 2-wk need</span></th>`).join('')}</tr>`+
+ D.der.checks.map(r=>`<tr><td>${r.cid}</td><td><div class="item">${pimg(r.item)}<div>${esc(r.name)}<div class="code">#${r.item}</div></div></div></td><td class="n">${r.qty}</td>${STORES.map(s=>{const v=r.stores[s];return `<td class="n">${v.on_hand} / ${v.rule}<br>${chip(v.status,cls[v.status])}</td>`}).join('')}</tr>`).join('')}
+
+/* F3 */
+function renderF3(){const dm=D.der.demo;
+ $('#f3Demo').innerHTML=`<tr><th>Area</th><th class="n">Owner-occupied</th><th class="n">Median household income</th><th class="n">Median home value</th><th class="n">Persons per household</th></tr>`+
+ STORES.map(s=>`<tr><td>${s} (city)</td><td class="n">${dm[s].owner}%</td><td class="n">${money(dm[s].income)}</td><td class="n">${money(dm[s].value)}</td><td class="n">${dm[s].pph}</td></tr>`).join('')+
+ `<tr><td>Sonoma County</td><td class="n">62.2%</td><td class="n">$102,840</td><td class="n">$779,000</td><td class="n">2.50</td></tr><tr><td>Mendocino County</td><td class="n">60.9%</td><td class="n">$64,688</td><td class="n">$486,000</td><td class="n">n/a</td></tr>`+
+ `<tr><td colspan="5" class="small">Sonoma County: 190,498 households, median age 42.7, 29.4% Hispanic, 94.0% broadband. Mendocino County: 34,570 households, median age 43.9, 26.9% Hispanic, 87.0% broadband.</td></tr>`;
+ $('#f3Trig').innerHTML=`<tr><th>Trigger</th><th>Signal the agent watches</th><th>Lead time</th><th>Products</th><th>Stores</th></tr>`+D.triggers.map(t=>`<tr>${t.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('')}
+
+/* F4 */
+function renderF4(){const a=D.sim.aud,dm=D.der.demo;
+ $('#f4Areas').innerHTML=`<tr><th>Trade area</th><th class="n">Share of customers ${chip('Proxy','sim')}</th><th class="n">Email opt-ins ${chip('Sim','sim')}</th><th class="n">SMS opt-ins ${chip('Sim','sim')}</th><th class="n">Social followers ${chip('Sim','sim')}</th><th class="n">Owner rate ${chip('Real','real')}</th><th class="n">Median income ${chip('Real','real')}</th></tr>`+
+ STORES.map(s=>`<tr><td>${s}</td><td class="n">${a[s].cust_share}%</td><td class="n">${$$(a[s].email)}</td><td class="n">${$$(a[s].sms)}</td><td class="n">${$$(a[s].social)}</td><td class="n">${dm[s].owner}%</td><td class="n">${money(dm[s].income)}</td></tr>`).join('');
+ {const T=D.trends,W=T.weeks.length,COL=['#007A33','#222222','#B25E00','#808080','#1f6fb2'],h=180,w=800;
+  const x=i=>i/(W-1)*w,yv=v=>h-v/100*h;
+  const yrs=['2023','2024','2025','2026'].map(y=>{const i=T.weeks.findIndex(d=>d.startsWith(y));return `<line x1="${x(i)}" x2="${x(i)}" y1="0" y2="${h}" stroke="#E6E6E6"/><text x="${x(i)+3}" y="12" font-size="11" fill="#5d5d5d">${y}</text>`}).join('');
+  const lines=T.terms.map((k,j)=>`<polyline fill="none" stroke="${COL[j]}" stroke-width="1.6" ${j===3?'stroke-dasharray="4 3"':''} points="${T.values[k].map((v,i)=>x(i).toFixed(1)+','+yv(v).toFixed(1)).join(' ')}"/>`).join('');
+  $('#f4Search').innerHTML=`<svg viewBox="0 0 ${w} ${h+4}" width="100%" role="img" aria-label="Weekly Google Trends interest for five terms, 2023 to 2026">${yrs}${lines}</svg><div class="legend small">${T.terms.map((k,j)=>`<span><span style="display:inline-block;width:14px;height:3px;background:${COL[j]};vertical-align:middle"></span> ${esc(k)}</span>`).join('')}</div><p class="small">What it shows: sandbags spiked only when storms hit (early Jan 2023), not before the 2023 El Niño winter. Compost peaks every spring and holds near 11 in fall. Air purifier interest rose in Nov 2025 and spiked in spring 2026. Gutter guard is too rare a search here to show; the agent leans on Shopping and local inventory ads for it.</p>`}
+ $('#f4Geo').innerHTML=`<tr><th>Campaign</th>${STORES.map(s=>`<th class="n">${s}</th>`).join('')}<th>Why</th></tr>`+D.proj.campaigns.map(c=>`<tr><td>${esc(c.name)}</td>${STORES.map(s=>`<td class="n">${typeof D.der.geo[c.id][s]==='number'?D.der.geo[c.id][s]+'%':'Smoke only'}</td>`).join('')}<td class="small">${esc(c.geo)}</td></tr>`).join('')}
+
+/* F5 */
+function recChip(r){return r.startsWith('OWNED')?chip(r,'warn'):r.includes('IF')||r.includes('CONFIRM')?chip(r,'warn'):chip(r,'ok')}
+function renderF5(){const rc=recCamps();let sp=0;rc.forEach(c=>sp+=c.lines.reduce((a,l)=>a+l.spend,0));
+ const reserve=S.budget-sp;
+ $('#f5Lead').innerHTML=`Five tests built from the research. The agent recommends three for paid media now, one smoke-day standby, and one for email and SMS only: ${money(sp)} of a ${money(S.budget)} ceiling, with ${money(reserve)} held in reserve${reserve<S.budget*0.1?' <b class="neg">: below the 10% reserve rule, so the agent would trim before Gate 1</b>':''}. Optional buyer-segment tests you add from the Buyer Segments tab appear at the end.`;
+ $('#beNum').textContent=be().toFixed(2)+'x';
+ $('#camps').innerHTML=D.proj.campaigns.map(c=>{const t=campTotals(c);const st=S.g1[c.id];const v=S.ver[c.id]||1;
+  const lines=c.lines.map(l=>{const p=proj(l,c.aov);const b=D.proj.bench[l.ch];return `<tr><td><b>${esc(l.label)}</b><div class="small">${money(l.spend)} over the flight</div><div class="small muted">${esc(b.src)} ${chip(b.status.includes('ASSUMPTION')&&!b.status.includes('VERIFIED')?'Assumption':b.status.includes('spread')?'Real base, assumed spread':'Real',b.status==='ASSUMPTION'?'asm':'real')}</div></td>
+   ${['low','base','high'].map(k=>`<td class="n ${k}">${money(p[k].cpc,2)} CPC<br>${(p[k].cvr*100).toFixed(1)}% conv.<br>${$$(p[k].clicks)} clicks<br>${$$(p[k].orders,1)} orders<br>${money(p[k].revenue)} rev.<br><b>${p[k].roas.toFixed(2)}x</b> ROAS<br><span class="${p[k].profit<0?'neg':'pos'}">${money(p[k].profit)}</span> profit</td>`).join('')}</tr>`}).join('');
+  return `<article class="camp" id="camp_${c.id}"><div class="top"><div><div class="small muted">${c.id} · version ${v}</div><h3>${esc(c.name)}</h3><div class="small">${esc(c.theme)}</div></div><div>${recChip(c.recommend)}</div></div>
+  <div class="body"><div class="grid g2">
+   <div><p><b>Trigger:</b> ${esc(c.trigger)}</p><p><b>Flight:</b> ${esc(c.flight)}</p><p><b>Where:</b> ${esc(c.geo)}</p><p><b>Landing page:</b> ${esc(c.landing)}</p><p><b>Hypothesis:</b> ${esc(c.hypothesis)}</p>
+    <p><b>Products</b> ${chip('Real','real')}</p>${c.items.map(it=>`<div class="item" style="margin:6px 0">${pimg(it.item)}<div>${it.qty} × ${esc(it.name)}<div class="code">#${it.item} · ${money(it.price,2)} · on hand ${stockLine(it.stock)}</div></div></div>`).join('')}
+    <p class="small"><b>Basket ${money(c.aov,2)}.</b> ${esc(c.basket_note)}</p>
+    <p class="small"><b>Held back:</b> ${c.held.map(esc).join('; ')}</p></div>
+   <div><p><b>Creative to test</b></p>${c.creative.map(cr=>{const parts=cr.split(' / ');return parts.length>=3?`<div class="ad" style="margin-bottom:10px"><div class="img"><div class="h">${esc(parts[0])}</div><div class="s">${esc(parts[1])}</div><div class="b">${esc(parts[2])}</div></div><div class="meta">Friedman's Home Improvement · Sponsored · prices and stock render live from the feed</div></div>`:`<div class="log" style="margin-bottom:10px">${esc(cr)}</div>`}).join('')}</div>
+  </div>
+  <h4 style="margin-top:16px">Projection, ${esc(c.flight.split(' (')[0])}</h4>
+  <div class="tbl"><table class="proj"><tr><th>Line</th><th class="n">Low</th><th class="n">Base</th><th class="n">High</th></tr>${lines}
+   <tr><td><b>Campaign total</b> · ${money(t.spend)}</td>${['low','base','high'].map(k=>`<td class="n ${k}"><b>${(t[k].rev/t.spend).toFixed(2)}x</b><br><span class="${t[k].p<0?'neg':'pos'}">${money(t[k].p)}</span></td>`).join('')}</tr></table></div>
+  <p class="small">What would prove it wrong: ROAS below ${be().toFixed(2)}x after 1,000 clicks on a line. ${c.recommend.startsWith('OWNED')?'<b>Base-case ROAS is below break-even, so the agent recommends email and SMS (no media cost) instead of paid clicks.</b>':''}</p>
+  <div class="status" id="st_${c.id}">${st?gateText(c.id):'Gate 1: waiting on your decision'}</div>
+  <label class="sr" for="n_${c.id}">Notes for ${esc(c.name)}</label><textarea id="n_${c.id}" placeholder="Notes for rework (required for REWORK)"></textarea>
+  <div class="btns"><button class="btn" data-a="approve" data-c="${c.id}">Approve</button><button class="btn warn" data-a="rework" data-c="${c.id}">Rework</button><button class="btn bad" data-a="decline" data-c="${c.id}">Decline</button></div>
+  <div id="rw_${c.id}"></div>
+  </div></article>`}).join('');
+ document.querySelectorAll('#camps .btn').forEach(b=>b.onclick=()=>gate1(b.dataset.c,b.dataset.a));
+ renderSegG1();renderG2()}
+function renderSegG1(){const add=D.der.segments.filter(s=>S.seg[s.id]);let el=$('#segG1');if(!el){el=document.createElement('div');el.id='segG1';$('#camps').after(el)}
+ el.innerHTML=add.length?`<h3>Optional segment tests</h3>`+add.map(s=>`<div class="card" style="margin-bottom:14px"><div class="small muted">${s.id} · from Buyer Segments</div><h4>${esc(s.name)}</h4><p class="small"><b>Test:</b> ${esc(s.test)}<br><b>What would confirm it:</b> ${esc(s.confirm)}</p><p class="small muted">No projection: there is no public benchmark for this audience, so it runs as a capped learning test.</p><div class="status">${S.gs[s.id]?(S.gs[s.id]==='approve'?'<span class="pos">Gate 1: approved as a learning test</span>':'<span class="neg">Gate 1: declined</span>'):'Gate 1: waiting on your decision'}</div><div class="btns"><button class="btn" data-gs="approve" data-i="${s.id}" ${S.gs[s.id]?'disabled':''}>Approve</button><button class="btn bad" data-gs="decline" data-i="${s.id}" ${S.gs[s.id]?'disabled':''}>Decline</button></div></div>`).join(''):'';
+ el.querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{S.gs[b.dataset.i]=b.dataset.gs;logD('Gate 1',`Segment test ${b.dataset.i}: ${b.dataset.gs}`);renderSegG1()})}
+function gateText(id){const g=S.g1[id];return g.a==='approve'?`<span class="pos">Gate 1: approved v${S.ver[id]||1} · build paused, see Gate 2</span>`:g.a==='decline'?`<span class="neg">Gate 1: declined</span>`:`<span style="color:var(--warn)">Gate 1: rework v${S.ver[id]} resubmitted</span>`}
+function gate1(id,a){const note=$('#n_'+id).value.trim();
+ if(a==='rework'&&!note){$('#st_'+id).innerHTML='<span class="neg">Add a note so the agent knows what to change.</span>';return}
+ if(a==='rework'){S.ver[id]=(S.ver[id]||1)+1;S.g1[id]={a,note};const c=D.proj.campaigns.find(x=>x.id===id);
+  $('#st_'+id).innerHTML='Agent revising…';setTimeout(()=>{$('#st_'+id).innerHTML=gateText(id);$('#rw_'+id).innerHTML=`<div class="log"><b>Agent, v${S.ver[id]}:</b> Applied your note ("${esc(note)}"), reran the projection and the stock, brand and sensitivity checks, and resubmitted ${esc(c.name)} for Gate 1. In the live agent this is a real revision; the demo records the loop only.</div>`;
+  document.querySelector(`#camp_${id} .small.muted`).textContent=`${id} · version ${S.ver[id]}`},900);return}
+ S.g1[id]={a,note};logD('Gate 1',`${CN(id)}: ${a}${note?' ('+note+')':''}`);$('#st_'+id).innerHTML=gateText(id);updGateChip();renderG2()}
+function renderG2(){const ok=D.proj.campaigns.filter(c=>S.g1[c.id]&&S.g1[c.id].a==='approve');
+ if(!ok.length){$('#gate2').innerHTML='<p class="muted">Approve a campaign at Gate 1 to see its launch packet.</p>';return}
+ $('#gate2').innerHTML=ok.map(c=>{const dly=c.lines.map(l=>`${esc(l.label)} ${money(l.spend/21,2)} a day`).join(' · ');
+  const waits=D.der.flags.filter(f=>f.cid===c.id&&S.po[f.id]!=='confirmed').map(f=>`${f.name.split(',')[0]} delivery not confirmed by Purchasing`);
+  const cads=D.ads.ads.filter(a=>a.cid===c.id);const adw=cads.filter(a=>S.ad[a.id]!=='approve');
+  const checks=[['Built paused in each platform',1],[`Daily caps: ${dly}`,1],['Account and campaign spend limits set at or under the approved budget',1],['Geo: ZIPs and radius exactly as approved, outside areas excluded',1],['UTM tags on every URL',1],['Conversion events firing: purchase, pickup order, add to cart (simulated check)',1],[`Ads approved: ${cads.length-adw.length} of ${cads.length}${adw.length?' (see Ad samples)':''}`,adw.length?0:1],['Brand check, section 13: 9 of 9 PASS',1],['Sensitivity check: no fear lines, no evacuation zones',1],[`Stock rule: ${waits.length?waits.join('; '):'all hero items pass'}`,waits.length?0:1]];
+  const g=S.g2[c.id];
+  return `<div class="card" style="margin-bottom:16px"><h4>${esc(c.name)} · launch packet v${S.ver[c.id]||1}</h4><ul class="small">${checks.map(([t,k])=>`<li>${k?chip('Pass','ok'):chip('Waiting','warn')} ${t}</li>`).join('')}</ul>
+  <div class="status">${g?(g==='approve'?'<span class="pos">Gate 2: approved. Live, verified serving within one hour (simulated).</span>':g==='decline'?'<span class="neg">Gate 2: declined</span>':'<span style="color:var(--warn)">Gate 2: sent back for rework</span>'):waits.length||adw.length?`Gate 2: waiting on ${[waits.length?'Purchasing to confirm the flagged deliveries (Confirmations)':'',adw.length?'ad approval (Ad samples)':''].filter(Boolean).join(' and ')}`:'Gate 2: ready for your sign-off'}</div>
+  <div class="btns"><button class="btn" data-g2="approve" data-c="${c.id}" ${waits.length||adw.length||g?'disabled':''}>Approve launch</button><button class="btn warn" data-g2="rework" data-c="${c.id}" ${g?'disabled':''}>Rework</button><button class="btn bad" data-g2="decline" data-c="${c.id}" ${g?'disabled':''}>Decline</button></div></div>`}).join('');
+ document.querySelectorAll('[data-g2]').forEach(b=>b.onclick=()=>{S.g2[b.dataset.c]=b.dataset.g2;logD('Gate 2',`${CN(b.dataset.c)}: launch ${b.dataset.g2}`);renderG2();updGateChip()})}
+$('#gateChip').onclick=()=>{const pend=D.proj.campaigns.some(c=>!S.g1[c.id]||S.g1[c.id].a==='rework');go(pend||!Object.values(S.g2).includes('approve')?'f5':'f6')};
+function updGateChip(){const pend=D.proj.campaigns.filter(c=>!S.g1[c.id]||S.g1[c.id].a==='rework').length;const g2=Object.values(S.g2).filter(x=>x==='approve').length;
+ $('#gateChip').textContent=pend?`Gate 1: ${pend} waiting on you`:g2?`${g2} live · Gate 3: ${D.der.adj.filter(a=>!S.g3[a.id]).length} waiting`:'Gate 2: waiting on you'}
+
+/* F6 */
+function status(roas){const b=be();return roas>=b*1.15?chip('On track','ok'):roas>=b?chip('Watch','warn'):chip('Off track','bad')}
+function renderF6(){
+ $('#f6Score').innerHTML=`<tr><th>Campaign · line</th><th class="n">Days</th><th class="n">Spend vs plan</th><th class="n">Clicks</th><th class="n">CTR</th><th class="n">CPC</th><th class="n">Orders</th><th class="n">Revenue</th><th class="n">ROAS</th><th class="n">Chance above break-even</th><th>Status</th></tr>`+
+ D.sim.ttd.map(t=>{const c=D.proj.campaigns.find(x=>x.id===t.cid);const l=c.lines.find(x=>x.ch===t.ch);const plan=c.id==='C5'?l.spend/6*t.days:l.spend/21*t.days;const roas=t.revenue/t.spend;
+  return `<tr><td>${esc(c.name)} · ${CH[t.ch]}</td><td class="n">${t.days}</td><td class="n">${money(t.spend)} / ${money(plan)}</td><td class="n">${$$(t.clicks)}</td><td class="n">${(t.clicks/t.impr*100).toFixed(2)}%</td><td class="n">${money(t.spend/t.clicks,2)}</td><td class="n">${$$(t.orders)}</td><td class="n">${money(t.revenue)}</td><td class="n"><b>${roas.toFixed(2)}x</b></td><td class="n">${t.p_above_be}%</td><td>${t.clicks<100||t.days<3?chip('Too early','sim'):t.p_above_be>=90?chip('On track','ok'):t.p_above_be>=60?chip('Watch','warn'):chip('Off track','bad')}</td></tr>`}).join('')+`<tr><td colspan="11" class="small muted">Chance above break-even: 4,000 simulated draws of the true conversion rate and basket value, given the clicks and orders so far, starting from the benchmark rate weighted as 100 clicks. Lines under 100 clicks or 3 days are too early to call.</td></tr>`;
+ const H=D.sim.hours.map(h=>{const s=h.lines.reduce((a,l)=>a+l.spend,0),r=h.lines.reduce((a,l)=>a+l.revenue,0);return {h:h.h,s,r,ev:h.lines.some(l=>l.event)||h.h===9}});
+ const mx=Math.max(...H.map(x=>Math.max(x.s,x.r)));
+ const lbl=h=>h===0?'12a':h<12?h+'a':h===12?'12p':(h-12)+'p';
+ $('#bars').innerHTML=H.map(x=>`<button class="h ${x.ev?'ev':''}" aria-pressed="false" data-h="${x.h}" style="border:0;background:none;padding:0" aria-label="${lbl(x.h)}: spend ${money(x.s,2)}, revenue ${money(x.r,2)}"><i class="sp" style="height:${x.s/mx*100}%"></i><i class="rv" style="height:${x.r/mx*100}%"></i></button>`).join('');
+ $('#axis').innerHTML=H.map(x=>`<span>${x.h%3===0?lbl(x.h):''}</span>`).join('');
+ document.querySelectorAll('#bars .h').forEach(b=>b.onclick=()=>{document.querySelectorAll('#bars .h').forEach(x=>x.setAttribute('aria-pressed',x===b));const hr=D.sim.hours[+b.dataset.h];
+  const ev=[...new Set(hr.lines.filter(l=>l.event).map(l=>l.event))];const prot=D.der.narr.protective.filter(p=>(hr.h===9&&p.time.startsWith('9'))||(hr.h===13&&p.time.startsWith('1:')));
+  $('#hourDetail').innerHTML=`<b>${lbl(hr.h)} check</b> ${chip('Simulated','sim')}<div class="tbl"><table><tr><th>Line</th><th class="n">Spend</th><th class="n">Clicks</th><th class="n">Add to cart</th><th class="n">Orders</th><th class="n">Revenue</th></tr>${hr.lines.map(l=>`<tr><td>${esc(CN(l.cid))} · ${CH[l.ch]}${l.event?' '+chip(l.event.startsWith('smoke standby')?'standby live':'paused in part','warn'):''}</td><td class="n">${money(l.spend,2)}</td><td class="n">${l.clicks.toFixed(1)}</td><td class="n">${l.carts.toFixed(2)}</td><td class="n">${l.orders.toFixed(2)}</td><td class="n">${money(l.revenue,2)}</td></tr>`).join('')}</table></div>
+  <div class="small muted">Hourly figures are expected values, so they show decimals; reports round at the period level.</div>${prot.map(p=>`<p><b>Protective action, ${p.time}:</b> ${esc(p.action)}</p>`).join('')}${ev.length&&!prot.length?`<p>${esc(ev.join(', '))} continues.</p>`:''}`});
+ let rep=2;const N=D.der.narr;
+ const drawRep=()=>{$('#repTabs').innerHTML=D.der.reports.map((r,i)=>`<button aria-pressed="${i===rep}" data-i="${i}">${r.title}</button>`).join('');
+  $('#repTabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{rep=+b.dataset.i;drawRep()});
+  const r=D.der.reports[rep];const tot=r.rows.reduce((a,x)=>({s:a.s+x.spend,v:a.v+x.revenue,o:a.o+x.orders}),{s:0,v:0,o:0});
+  $('#rep').innerHTML=`<div class="small muted">${r.window} · ${chip('Simulated','sim')}</div><h4 style="margin-top:6px">${r.title}, Sat Oct 31</h4><ol>
+   <li><b class="k">Headline</b>${esc(N.headline[rep])}</li>
+   <li><b class="k">This period</b><div class="tbl"><table><tr><th>Line</th><th class="n">Spend</th><th class="n">Clicks</th><th class="n">Orders</th><th class="n">Revenue</th><th class="n">ROAS</th></tr>${r.rows.map(x=>`<tr><td>${esc(CN(x.cid))} · ${CH[x.ch]}</td><td class="n">${money(x.spend)}</td><td class="n">${$$(x.clicks)}</td><td class="n">${$$(x.orders)}</td><td class="n">${money(x.revenue)}</td><td class="n">${(x.revenue/x.spend).toFixed(2)}x</td></tr>`).join('')}<tr><td><b>Total</b></td><td class="n"><b>${money(tot.s)}</b></td><td></td><td class="n"><b>${$$(tot.o)}</b></td><td class="n"><b>${money(tot.v)}</b></td><td class="n"><b>${(tot.v/tot.s).toFixed(2)}x</b></td></tr></table></div><div class="small muted">One 8-hour window is too small to judge a line; decisions use test-to-date figures above.</div></li>
+   <li><b class="k">What's working</b><ul>${N.working.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></li>
+   <li><b class="k">What isn't, yet</b><ul>${N.notworking.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></li>
+   <li><b class="k">Funnel</b>${esc(N.funnel)}</li>
+   ${rep>0?`<li><b class="k">Outside forces</b><ul>${N.forces.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></li>`:''}
+   ${rep===2?`<li><b class="k">Protective actions taken</b><ul>${N.protective.map(p=>`<li>${p.time}: ${esc(p.action)}</li>`).join('')}</ul></li>`:rep===1?`<li><b class="k">Protective actions taken</b><ul><li>${esc(N.protective[0].time)}: ${esc(N.protective[0].action)}</li></ul></li>`:'<li><b class="k">Protective actions taken</b>None.</li>'}
+   <li><b class="k">Recommended for Gate 3</b>${D.der.adj.map(a=>a.id).join(', ')}. See the queue below.</li>
+   <li><b class="k">Data gaps</b>Demo: no live connections. Live: in-store sales from ads need an offline conversion import to be counted.</li></ol>`};
+ drawRep();
+ $('#adjq').innerHTML=D.der.adj.map(a=>`<div class="adj" id="adj_${a.id}"><div class="small muted">${a.id} · ${esc(CN(a.camp))}</div><h4>${esc(a.change)}</h4><p class="small"><b>Why:</b> ${esc(a.why)}<br><b>Expected effect:</b> ${esc(a.effect)}<br><b>Undo:</b> ${esc(a.undo)}</p>
+  <details open><summary><b>Diagnosis and fix</b> · confidence ${esc(a.confidence)} ${chip('Simulated','sim')}</summary>
+  <p class="small" style="margin:8px 0"><b>Funnel stage:</b> ${esc(a.stage)}</p>
+  <div class="tbl"><table class="fun"><tr><th>Funnel stage</th><th class="n">Actual</th><th class="n">Benchmark</th><th>Status</th><th>Benchmark source</th></tr>${a.funnel.map(f=>`<tr><td>${esc(f.stage)}</td><td class="n">${f.actual==null?'n/a':f.actual.toFixed(1)+'%'}</td><td class="n">${f.bench==null?'n/a':f.bench.toFixed(1)+'%'}</td><td class="st">${({OK:chip('OK','ok'),LOW:chip('Below','warn'),PROBLEM:chip('Problem','bad')})[f.status]||chip('n/a','sim')}</td><td class="small">${esc(f.src)}</td></tr>`).join('')}</table></div>
+  <div class="diag"><div><h5>Likely diagnosis</h5><p class="small" style="margin:0">${esc(a.diagnosis)}</p><h5 style="margin-top:10px">Likely causes</h5><ul>${a.causes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+  <div><h5>Remediation</h5><ol>${a.remediation.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5 style="margin-top:10px">Success looks like</h5><p class="small" style="margin:0">${esc(a.success)}</p></div></div></details>
+  <div class="status" id="as_${a.id}">${S.g3[a.id]?adjText(a.id):'Waiting on your decision'}</div><label class="sr" for="an_${a.id}">Notes</label><textarea id="an_${a.id}" placeholder="Notes for rework"></textarea>
+  <div class="btns"><button class="btn" data-adj="approve" data-i="${a.id}">Approve</button><button class="btn warn" data-adj="rework" data-i="${a.id}">Rework</button><button class="btn bad" data-adj="decline" data-i="${a.id}">Decline</button></div></div>`).join('');
+ document.querySelectorAll('[data-adj]').forEach(b=>b.onclick=()=>{const id=b.dataset.i;if(b.dataset.adj==='rework'&&!$('#an_'+id).value.trim()){$('#as_'+id).innerHTML='<span class="neg">Add a note so the agent knows what to change.</span>';return}
+  S.g3[id]=b.dataset.adj;logD('Gate 3',`${id} ${CN(D.der.adj.find(x=>x.id===id).camp)}: ${b.dataset.adj}${b.dataset.adj==='rework'?' ('+$('#an_'+id).value.trim()+')':''}`);$('#as_'+id).innerHTML=adjText(id);updGateChip()})}
+function adjText(id){const a=S.g3[id];return a==='approve'?'<span class="pos">Approved. Applied and verified within one hour (simulated).</span>':a==='decline'?'<span class="neg">Declined. No change.</span>':'<span style="color:var(--warn)">Sent back. The agent revises and resubmits.</span>'}
+
+/* ---- Opportunity alerts ---- */
+const A=D.alerts;S.al={};S.prea={};let ALD=[];
+const recSpend=()=>recCamps().reduce((a,c)=>a+c.lines.reduce((x,l)=>x+l.spend,0),0);
+const alSpent=()=>ALD.filter(d=>S.al[d.id]==='all'||S.al[d.id]==='auto').reduce((a,d)=>a+d.paidSpend,0);
+const reserveLeft=()=>S.budget-recSpend()-alSpent();
+function storeShare(stores){const t=stores.reduce((a,s)=>a+D.sim.aud[s].cust_share,0);return Object.fromEntries(stores.map(s=>[s,D.sim.aud[s].cust_share/t]))}
+function draftAlert(src,idx){const R=A.rules[src.rule];const id='AL-'+(idx+1);
+ if(R.routed){return {id,src,R,routed:true}}
+ const watch=src.level==='Watch';const scale=watch?0.5:1;const sh=storeShare(src.stores);
+ // basket with stock-aware swaps per store
+ const items=R.basket.map(([it,q])=>({it,q,p:P[it]}));const aov=items.reduce((a,x)=>a+x.p.price*x.q,0);
+ const lines=R.paid.map(([ch,sp])=>{const b=D.proj.bench[ch];const spend=sp*scale;const pr={};
+  [['low',0],['base',1],['high',2]].forEach(([k,i])=>{const cpc=b.cpc[i],cvr=Math.min(b.cvr[i]*R.lift,0.12);const clicks=spend/cpc,orders=clicks*cvr,rev=orders*aov,gp=rev*(1-S.returns/100)*S.margin/100;pr[k]={cpc,cvr,clicks,orders,rev,roas:rev/spend,profit:gp-spend}});
+  return {ch,label:b.label,spend,pr,ok:pr.base.roas>=be()}});
+ const owned=R.owned.map(o=>{const O=A.owned[o];const list=src.stores.reduce((a,s)=>a+(o==='sms'?D.sim.aud[s].sms:D.sim.aud[s].email),0);const pr={};
+  [['low',.6],['base',1],['high',1.4]].forEach(([k,f])=>{const clicks=list*O.click*f,orders=clicks*O.conv,rev=orders*aov,cost=list*O.cost_per_msg,gp=rev*(1-S.returns/100)*S.margin/100;pr[k]={clicks,orders,rev,cost,profit:gp-cost}});
+  return {o,label:O.label,list,pr}});
+ const paidOk=lines.filter(l=>l.ok);let paidSpend=paidOk.reduce((a,l)=>a+l.spend,0);
+ const cap=Math.max(0,reserveLeft());const capped=paidSpend>cap;if(capped){const f=cap/paidSpend;paidOk.forEach(l=>{l.capF=f});paidSpend=cap}
+ const ordersBase=paidOk.reduce((a,l)=>a+l.pr.base.orders*(l.capF||1),0)+owned.reduce((a,o)=>a+o.pr.base.orders,0);
+ const stock=items.map(x=>{const rows=src.stores.map(s=>{const need=Math.ceil(ordersBase*x.q*sh[s]);const oh=x.p.stock[s];let st=oh>=need*1.5?'OK':oh>=need*0.5?'TIGHT':'SHORT';let swap=null;
+   if(st==='SHORT'&&R.alts&&R.alts[x.it]){const a=P[R.alts[x.it]];if(a&&a.stock[s]>=need){swap=a;st='SWAP'}}return {s,need,oh,st,swap}});return {...x,rows}});
+ // goals are capped by what the hero item can actually fill at each affected store
+ const hero=stock[0];const sellable=src.stores.reduce((a,s)=>{const r=hero.rows.find(x=>x.s===s);const oh=r.swap?r.swap.stock[s]:r.oh;return a+Math.min(ordersBase*sh[s],oh/hero.q)},0);
+ const capF=ordersBase>0?Math.min(1,sellable/ordersBase):1;
+ return {id,src,R,watch,aov,lines,owned,paidSpend,capped,stock,ordersBase,capF}}
+function fmtR(r){return `${r.roas.toFixed(2)}x`}
+function renderAlerts(){
+ const r=reserveLeft();$('#alReserve').innerHTML=`<b>Reserve for alerts:</b> ${money(Math.max(0,r))} left of ${money(S.budget-recSpend())} (the test budget of ${money(S.budget)} minus ${money(recSpend())} in recommended campaigns${alSpent()?`, minus ${money(alSpent())} approved for alerts`:''}). Drafts never spend beyond it. Break-even ROAS is ${be().toFixed(2)}x at the current margin and return rate.`;
+ $('#alScanNote').innerHTML=`Scanned ${esc(A.nws_source)}. ${chip('Real','real')} The live version repeats this every hour, plus AirNow for smoke.`;
+ $('#alLive').innerHTML=A.live.map(l=>{const R=A.rules[l.rule];const lvl=l.level==='Routed'?chip('Routed to '+R.routed,'ok'):l.level==='Watch'?chip('Watch: draft created','warn'):chip('No trigger','sim');
+  return `<div class="card"><h4>${esc(R?R.name:'Active NWS alerts')}</h4><div>${lvl}</div><ul class="small">${l.evidence.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>${R&&R.note?`<p class="small">${esc(R.note)}</p>`:''}</div>`}).join('');
+ $('#alRules').innerHTML=`<tr><th>Alert</th><th>Fires when</th><th>Products</th><th>Channels</th><th>Pre-approval</th></tr>`+Object.entries(A.rules).map(([k,R])=>`<tr><td><b>${esc(R.name)}</b></td><td class="small">${R.triggers.map(esc).join('<br>')}</td><td class="small">${R.basket?R.basket.map(([i,q])=>`${q} × ${esc(P[i].name.split(',')[0])}`).join('<br>'):esc(R.note)}</td><td class="small">${R.paid?R.paid.map(([c,s])=>`${D.proj.bench[c].label} up to ${money(s)}`).join('<br>')+'<br>SMS and email to opted-in':'Existing campaign'}</td><td class="small">${R.routed?'Already approved':S.prea[k]?chip('Pre-approved, '+money(S.prea[k])+' per event','ok')+`<div class="btns"><button class="btn bad" data-unpre="${k}">Revoke</button></div>`:`<div class="btns"><button class="btn out" data-pre="${k}">Pre-approve up to $300</button></div>`}</td></tr>`).join('');
+ document.querySelectorAll('[data-pre]').forEach(b=>b.onclick=()=>{S.prea[b.dataset.pre]=300;logD('Pre-approval',`${A.rules[b.dataset.pre].name} alerts pre-approved up to $300 per event`);renderAlerts()});
+ document.querySelectorAll('[data-unpre]').forEach(b=>b.onclick=()=>{delete S.prea[b.dataset.unpre];renderAlerts()});
+ $('#alSims').innerHTML=A.sims.map((s,i)=>`<button class="btn out" data-sim="${i}">${esc(s.label)}</button>`).join('');
+ document.querySelectorAll('[data-sim]').forEach(b=>b.onclick=()=>{const s=A.sims[+b.dataset.sim];const d=draftAlert(s,ALD.length);ALD.unshift(d);if(!d.routed&&S.prea[s.rule]&&d.paidSpend<=S.prea[s.rule]){S.al[d.id]='auto';logD('Alert',`${s.label}: launched automatically under pre-approval`)}renderDrafts();$('#alDrafts').scrollIntoView({behavior:'smooth'})});
+ renderDrafts()}
+function renderDrafts(){if(!ALD.length){$('#alDrafts').innerHTML='<p class="muted">No drafts yet.</p>';return}
+ $('#alDrafts').innerHTML=ALD.map(d=>{const s=d.src;if(d.routed)return `<div class="adj"><div class="small muted">${d.id} · ${esc(s.label||'')}</div><h4>${esc(d.R.name)}: routed to ${d.R.routed}</h4><p class="small">${s.evidence.map(esc).join('<br>')}</p><p class="small">${esc(d.R.note)}</p></div>`;
+  const dec=S.al[d.id];const parts=d.R.creative;
+  const lineRows=d.lines.map(l=>`<tr class="${l.ok?'':'muted'}"><td><b>${esc(l.label)}</b><div class="small">${l.ok?money(l.spend*(l.capF||1))+(l.capF?' (capped by reserve)':''):'Not included: projected below break-even'}</div></td>${['low','base','high'].map(k=>`<td class="n">${$$(l.pr[k].clicks)} clicks · ${$$(l.pr[k].orders,1)} orders<br>${money(l.pr[k].rev)} · <b>${fmtR(l.pr[k])}</b><br><span class="${l.pr[k].profit<0?'neg':'pos'}">${money(l.pr[k].profit)}</span></td>`).join('')}</tr>`).join('');
+  const ownRows=d.owned.map(o=>`<tr><td><b>${esc(o.label)}</b><div class="small">${$$(o.list)} opted-in at ${s.stores.join(', ')} ${chip('Sim','sim')}</div></td>${['low','base','high'].map(k=>`<td class="n">${$$(o.pr[k].clicks)} clicks · ${$$(o.pr[k].orders,1)} orders<br>${money(o.pr[k].rev)} · cost ${money(o.pr[k].cost)}<br><span class="pos">${money(o.pr[k].profit)}</span></td>`).join('')}</tr>`).join('');
+  const tot=k=>{let rev=0,p=0,o=0;d.lines.filter(l=>l.ok).forEach(l=>{const f=l.capF||1;rev+=l.pr[k].rev*f;p+=l.pr[k].profit*f;o+=l.pr[k].orders*f});d.owned.forEach(x=>{rev+=x.pr[k].rev;p+=x.pr[k].profit;o+=x.pr[k].orders});return {rev,p,o}};
+  const B0=tot('base'),H0=tot('high');const B={o:B0.o*d.capF,rev:B0.rev*d.capF,p:B0.p*d.capF},Hh={o:Math.min(H0.o,B0.o*d.capF*1.4)};const stCls={OK:'ok',TIGHT:'warn',SWAP:'warn',SHORT:'bad'};
+  return `<article class="camp" id="${d.id}"><div class="top"><div><div class="small muted">${d.id} · ${s.evidence[0].startsWith('SIMULATED')?'Simulated alert':'Live scan'} · ${s.stores.join(', ')}</div><h3>${esc(d.R.name)}${d.watch?' (watch level, half budget)':''}</h3><div class="small">${s.evidence.map(esc).join('<br>')}</div></div><div>${dec?(dec==='decline'?chip('Declined','bad'):dec==='rework'?chip('Rework','warn'):dec==='auto'?chip('Launched under pre-approval','ok'):chip(dec==='owned'?'Approved: owned only':'Approved: fast-track','ok')):chip('Waiting on you','warn')}</div></div>
+  <div class="body">
+   <div class="kpis akpi" style="margin:0 0 16px"><div style="border-color:var(--green)"><span>Goal, base case${d.capF<0.999?' (capped by stock)':''}</span><b style="font:700 26px Barlow,Arial">${$$(B.o)} orders</b></div><div style="border-color:var(--green)"><span>Revenue, base</span><b style="font:700 26px Barlow,Arial">${money(B.rev)}</b></div><div style="border-color:var(--green)"><span>Profit after costs, base</span><b style="font:700 26px Barlow,Arial">${money(B.p)}</b></div><div style="border-color:var(--green)"><span>Stretch (high case)</span><b style="font:700 26px Barlow,Arial">${$$(Hh.o)} orders</b></div><div style="border-color:var(--green)"><span>Paid spend from reserve</span><b style="font:700 26px Barlow,Arial">${money(d.paidSpend)}</b></div></div>
+   <div class="grid g2"><div>
+    <p><b>Window:</b> ${esc(d.R.window)}</p>
+    <p><b>Where:</b> ${s.stores.map(x=>`${x} trade area`).join(', ')}; ads ${s.stores.map(x=>`${Math.round(storeShare(s.stores)[x]*100)}% ${x}`).join(', ')}. Excludes any area under an evacuation order or a warning that pauses ads.</p>
+    <p><b>Audiences:</b> opted-in SMS and email customers of the affected stores; Search on ${d.R.terms.map(x=>`"${esc(x)}"`).join(', ')}; Meta within 15 miles of each affected store (25 miles for Ukiah). No targeting by protected traits.</p>
+    <p><b>Goals and stop rules:</b> paid ROAS at least ${(be()*1.2).toFixed(2)}x (1.2 x break-even); pause a paid line if CPC runs over 2x its benchmark or ROAS is under ${be().toFixed(2)}x after 150 clicks. Basket ${money(d.aov,2)} from real prices. Alert-intent lift on conversion: ${d.R.lift}x ${chip('Assumption','asm')}.</p>
+    <p><b>Products and stock</b> ${chip('Real stock','real')}</p>${d.stock.map(x=>`<div class="item" style="margin:6px 0">${pimg(x.it)}<div>${x.q} × ${esc(x.p.name)} · ${money(x.p.price,2)}<div class="small">${x.rows.map(r=>`${r.s}: ${r.oh} on hand, need ${r.need} ${chip(r.st,stCls[r.st])}${r.swap?' → '+esc(r.swap.name.split(',')[0])+' ('+r.swap.stock[r.s]+')':''}${r.st==='SHORT'?' → held out of that store’s ads; flagged to Purchasing':r.st==='TIGHT'?' → sell what’s there; paid spend at that store paces to stock':''}`).join('<br>')}</div></div></div>`).join('')}
+   </div><div>
+    <p><b>Creative</b></p>${parts.map(cr=>{const p=cr.split(' / ');return p.length>=3?`<div class="ad" style="margin-bottom:10px"><div class="img"><div class="h">${esc(p[0])}</div><div class="s">${esc(p[1])}</div><div class="b">${esc(p[2])}</div></div><div class="meta">Friedman's Home Improvement · Sponsored · prices and stock render live</div></div>`:`<div class="log" style="margin-bottom:10px">${esc(cr.replace('{area}',s.stores.join(' and ')).replace('{store}',s.stores[0]))}</div>`}).join('')}
+    <p><b>Safety and sensitivity</b></p><ul class="small">${d.R.safety.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    <p><b>Also do</b></p><ul class="small">${d.R.ops.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+   </div></div>
+   <h4 style="margin-top:12px">Projections for the window</h4>
+   <div class="tbl"><table><tr><th>Channel</th><th class="n">Low</th><th class="n">Base</th><th class="n">High</th></tr>${lineRows}${ownRows}</table></div>
+   <p class="small muted">Paid lines use the same 2026 benchmarks as the campaigns, with conversion lifted for alert intent. SMS and email use conservative agent assumptions (4% and 1.5% click, 6% and 3% conversion, $0.015 a text) until Friedman's own results exist. Goals are capped by what the lead item can fill at each affected store. Lines projected below break-even are left out of the budget.</p>
+   <div class="status">${dec?'':`Expires ${s.rule==='frost'?'at 2 p.m. today if not approved':'when the alert ends if not approved'}. Approving fast-track covers Gate 1 and Gate 2 at once, because the packet, caps, tracking and stock checks are prebuilt.`}</div>
+   <textarea id="aln_${d.id}" placeholder="Notes for rework" ${dec?'disabled':''}></textarea>
+   <div class="btns"><button class="btn" data-al="all" data-i="${d.id}" ${dec?'disabled':''}>Fast-track approve</button><button class="btn out" data-al="owned" data-i="${d.id}" ${dec?'disabled':''}>Approve owned channels only</button><button class="btn warn" data-al="rework" data-i="${d.id}" ${dec?'disabled':''}>Rework</button><button class="btn bad" data-al="decline" data-i="${d.id}" ${dec?'disabled':''}>Decline</button></div>
+   ${dec==='auto'?`<div class="log">Launched automatically under your standing pre-approval for ${esc(d.R.name)} alerts (cap ${money(S.prea[s.rule])} per event). Reported within the hour; you can pause it at any time.</div>`:''}
+  </div></article>`}).join('');
+ document.querySelectorAll('[data-al]').forEach(b=>b.onclick=()=>{const id=b.dataset.i;if(b.dataset.al==='rework'&&!$('#aln_'+id).value.trim()){$('#aln_'+id).placeholder='Add a note so the agent knows what to change';$('#aln_'+id).focus();return}
+  S.al[id]=b.dataset.al;const d=ALD.find(x=>x.id===id);logD('Alert',`${d.src.label}: ${{all:'fast-track approved',owned:'owned channels approved',rework:'sent back ('+$('#aln_'+id).value.trim()+')',decline:'declined'}[b.dataset.al]}`);renderAlerts()})}
+
+/* ---- Ad samples ---- */
+let adCamp=null;
+const cc=x=>x&&x.lim?`<span class="cc ${x.over?'over':''}">${x.n}/${x.lim}</span>`:'';
+function adPreview(a){const f=a.fmt;const imgs=(a.products||[]).map(i=>pimg(i)).join('');
+ if(f==='rsa')return `<div class="gs"><div class="sp">Sponsored</div><div class="u">${esc(a.url)} › ${a.paths.map(p=>esc(p.text)).join(' › ')}</div>
+  <div class="t">${a.headlines.slice(0,3).map(h=>esc(h.text)).join(' | ')}</div><div class="d">${esc(a.descriptions[0].text)} ${esc(a.descriptions[1]?a.descriptions[1].text:'')}</div>
+  ${a.sitelinks?`<div class="sl">${a.sitelinks.map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}</div>
+  <details class="assets"><summary>All assets with character counts</summary>${a.headlines.map(h=>`<div><span>H: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.descriptions.map(h=>`<div><span>D: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.paths.map(h=>`<div><span>Path: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}</details>`;
+ if(f==='pmax')return `<div class="item" style="gap:6px;flex-wrap:wrap">${imgs}</div><div class="gs" style="margin-top:8px"><div class="sp">Sponsored · Friedman's</div><div class="t">${esc(a.headlines[0].text)}</div><div class="d">${esc(a.long_headlines[0].text)}</div></div>
+  <details class="assets"><summary>All assets with character counts</summary>${a.headlines.map(h=>`<div><span>H: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.long_headlines.map(h=>`<div><span>Long: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.descriptions.map(h=>`<div><span>D: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}</details>`;
+ if(f==='meta')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored</div></div></div>
+  <p style="margin:8px 0;font-size:15px">${esc(a.primary.text)} ${cc(a.primary)}</p>
+  <div class="tile"><div><div class="h">${esc(a.tile.h)}</div><div class="s">${esc(a.tile.s)}</div><span class="b">${esc(a.tile.b)}</span></div><div style="display:flex;gap:4px">${(a.products||[]).slice(0,2).map(i=>pimg(i)).join('')}</div></div>
+  <div class="bar"><div><div class="small muted">FRIEDMANSHOME.COM</div><b>${esc(a.headline.text)}</b> ${cc(a.headline)}<div class="small">${esc(a.description)}</div></div><span class="c">${esc(a.cta)}</span></div></div>`;
+ if(f==='nextdoor')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored · Local business</div></div></div><p style="margin:8px 0"><b>${esc(a.headline)}</b></p><p style="font-size:15px;margin:0 0 10px">${esc(a.body)}</p><div class="bar"><span class="small">friedmanshome.com</span><span class="c">${esc(a.cta)}</span></div></div>`;
+ if(f==='tiktok')return `<div class="tt"><div class="hk">${esc(a.hook.replace(/^0 to 3 s: '/,'').replace(/'$/,''))}</div><b>@friedmanshome</b><div>${esc(a.text.text)} ${cc(a.text)}</div><div class="small" style="opacity:.8;margin-top:4px">Sponsored · ${esc(a.cta)}</div></div>
+  <details class="assets"><summary>Script beats</summary><ol class="small" style="margin:6px 0">${[a.hook,...a.beats].map(b=>`<li>${esc(b)}</li>`).join('')}</ol></details>`;
+ if(f==='sms')return `<div class="small muted" style="margin-bottom:6px">Text message</div><div class="smsb">${esc(a.text.text)}</div><div style="margin-top:6px">${cc(a.text)} · one text segment</div>`;
+ if(f==='email')return `<div style="border:1px solid var(--g200);border-radius:6px;overflow:hidden"><div style="padding:8px 12px;background:var(--g100);font-size:14px"><b>${esc(a.subject)}</b><div class="small muted">${esc(a.preheader)}</div></div>
+  <div style="background:var(--charcoal);color:#fff;padding:14px;font:700 22px/1.1 Barlow;text-transform:uppercase">Frost Tonight</div><div style="padding:12px;font-size:15px">${a.body.map(p=>`<p style="margin:0 0 6px">${esc(p)}</p>`).join('')}<span class="btn" style="pointer-events:none">${esc(a.cta)}</span><p class="small muted" style="margin:10px 0 0">${esc(a.footer)}</p></div></div>`;
+ return ''}
+function adStatus(id){const s=S.ad[id];return !s?'Waiting on your approval':s==='approve'?'<span class="pos">Approved for launch</span>':s==='decline'?'<span class="neg">Declined. Removed from the launch packet.</span>':'<span style="color:var(--warn)">Sent back. The agent revises and resubmits.</span>'}
+function renderAds(){const cs=D.proj.campaigns;if(!adCamp)adCamp=cs[0].id;
+ $('#adCamps').innerHTML=cs.map(c=>{const n=D.ads.ads.filter(a=>a.cid===c.id);const ok=n.filter(a=>S.ad[a.id]==='approve').length;return `<button type="button" aria-pressed="${c.id===adCamp}" data-ac="${c.id}">${esc(c.name)} (${ok}/${n.length})</button>`}).join('');
+ $('#adCamps').querySelectorAll('[data-ac]').forEach(b=>b.onclick=()=>{adCamp=b.dataset.ac;renderAds()});
+ const list=D.ads.ads.filter(a=>a.cid===adCamp);
+ $('#adList').innerHTML=`<div class="adwrap">`+list.map(a=>`<div class="pv"><div class="pvh"><span>${esc(a.venue)}</span>${chip('Checks pass','ok')}</div><div class="pvb">${adPreview(a)}
+  ${a.note?`<p class="small muted" style="margin:10px 0 0">${esc(a.note)}</p>`:''}
+  <div class="status" id="ads_${a.id}">${adStatus(a.id)}</div><label class="sr" for="adn_${a.id}">Notes</label><textarea id="adn_${a.id}" placeholder="Notes for rework" ${S.ad[a.id]==='approve'?'disabled':''}></textarea>
+  <div class="btns"><button class="btn" data-ad="approve" data-i="${a.id}">Approve</button><button class="btn warn" data-ad="rework" data-i="${a.id}">Rework</button><button class="btn bad" data-ad="decline" data-i="${a.id}">Decline</button></div></div></div>`).join('')+`</div>
+  <div class="btns" style="margin-top:14px"><button class="btn out" id="adAll" type="button">Approve all ${list.length} for this campaign</button></div>`;
+ document.querySelectorAll('[data-ad]').forEach(b=>b.onclick=()=>{const id=b.dataset.i,v=b.dataset.ad;const note=$('#adn_'+id).value.trim();
+  if(v==='rework'&&!note){$('#ads_'+id).innerHTML='<span class="neg">Add a note so the agent knows what to change.</span>';return}
+  S.ad[id]=v;logD('Ad',`${id}: ${v}${note?' ('+note+')':''}`);renderAds();renderG2();updGateChip()});
+ $('#adAll').onclick=()=>{list.forEach(a=>{if(S.ad[a.id]!=='approve'){S.ad[a.id]='approve'}});logD('Ad',`All ${CN(adCamp)} ads approved`);renderAds();renderG2()}}
+
+/* ---- Learnings ---- */
+const vChip=v=>chip(v,v==='Success'?'ok':v==='Mixed'?'warn':v==='Fail'?'bad':'sim');
+function renderLearn(){const L=D.der.learn;
+ $('#lSeason').innerHTML=D.der.season_lessons.map(x=>`<li>${esc(x)}</li>`).join('');
+ const c0=(L.find(l=>l.conditions&&l.conditions.enso)||{}).conditions;
+ $('#lCond').innerHTML=c0?`<b>Conditions saved with every record</b> (so next season can match on them): ${esc(c0.enso)} · ${esc(c0.window_rain)} · Smoke days: ${esc(c0.smoke_days)} · ${esc(c0.promo)} · Stock: ${esc((c0.stock||[]).join('; '))}`:'';
+ $('#lTbl').innerHTML=`<tr><th>Campaign · channel</th><th>Result</th><th class="n">ROAS planned / actual</th><th class="n">CPC planned / actual</th><th class="n">Conversion planned / actual</th><th>Lessons and adjustments</th></tr>`+
+  L.map(l=>{const p=l.projected||{},a=l.actual;return `<tr><td><b>${esc(l.campaign)}</b><div class="small">${esc(l.channel)}</div></td><td>${vChip(l.verdict)}${a?`<div class="small muted">${a.days} days · ${a.p_above_be}% above break-even</div>`:''}</td>
+  <td class="n">${a?`${p.roas.toFixed(2)}x / <b>${a.roas.toFixed(2)}x</b>`:'n/a'}</td><td class="n">${a?`${money(p.cpc,2)} / ${money(a.cpc,2)}`:'n/a'}</td><td class="n">${a?`${p.cvr}% / ${a.cvr}%`:'n/a'}</td>
+  <td class="small">${[...(l.lessons||[]),...(p.note?[p.note]:[])].map(esc).join('<br>')}${l.adjustments&&l.adjustments.length?`<div class="muted">Adjustments: ${l.adjustments.map(id=>id+(S.g3[id]?' ('+S.g3[id]+')':'')).join(', ')}</div>`:''}</td></tr>`}).join('');
+ const good=L.filter(l=>l.actual&&(l.verdict==='Success'||l.verdict==='Mixed'));
+ $('#lStart').innerHTML=`<tr><th>Campaign · channel</th><th class="n">CPC</th><th class="n">Conversion</th><th class="n">Basket</th><th>Use next fall</th></tr>`+good.map(l=>`<tr><td>${esc(l.campaign)} · ${esc(l.channel)}</td><td class="n">${money(l.actual.cpc,2)} <span class="small muted">vs ${money(l.projected.cpc,2)}</span></td><td class="n">${l.actual.cvr}% <span class="small muted">vs ${l.projected.cvr}%</span></td><td class="n">${money(l.actual.aov)}</td><td class="small">${l.verdict==='Success'?'Start from these actuals':'Use actuals, with the lessons above applied'}</td></tr>`).join('');
+ $('#lLog').innerHTML=LOG.length?LOG.map(x=>`<div><b>${new Date(x.time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})} · ${esc(x.kind)}:</b> ${esc(x.text)}</div>`).join(''):'No decisions yet. Approve, rework or decline anything in the demo and it appears here.'}
+$('#dlLearn').onclick=()=>{const out={saved:new Date().toISOString(),note:'Demo: results are simulated. The live agent appends one record per campaign line to learnings.jsonl at the end of each test, plus every decision.',
+ records:D.der.learn,season_lessons:D.der.season_lessons,adjustments:D.der.adj.map(a=>({id:a.id,campaign:CN(a.camp),change:a.change,diagnosis:a.diagnosis,remediation:a.remediation,decision:S.g3[a.id]||'pending'})),decisions:LOG};
+ const u=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));const l=document.createElement('a');l.href=u;l.download='friedmans-ppc-learnings.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+/* ---- Dashboard ---- */
+let dStore='All';
+function hlev(roas,clicks,days){if(clicks<100||days<3)return 'n';const b=be();return roas>=b*1.15?'g':roas>=b?'a':'r'}
+const HL={g:'Healthy',a:'Watch',r:'Needs attention',n:'Too early'};
+const dot=l=>l==='n'?chip('Too early','sim'):`<span class="dot ${l}"></span>${HL[l]}`;
+function storeAgg(s){const rows=D.der.store_perf.filter(r=>s==='All'||r.store===s);const a={spend:0,rev:0,orders:0,clicks:0};rows.forEach(r=>{a.spend+=r.spend;a.rev+=r.revenue;a.orders+=r.orders;a.clicks+=r.clicks});a.roas=a.spend?a.rev/a.spend:0;a.profit=a.rev*(S.margin/100)*(1-S.returns/100)-a.spend;return a}
+function storeHealth(s){const a=storeAgg(s);const why=[];let lev=a.roas>=be()*1.15?'g':a.roas>=be()?'a':'r';
+ const short=D.der.checks.filter(c=>c.stores[s]&&c.stores[s].status==='SHORT');const tight=D.der.checks.filter(c=>c.stores[s]&&c.stores[s].status==='CHECK INBOUND');
+ const openPO=D.der.flags.filter(f=>f.stores.some(x=>x.store===s)&&S.po[f.id]!=='confirmed');
+ const zero=D.der.checks.filter(c=>c.stores[s]&&c.stores[s].on_hand===0);
+ if(zero.length){why.push(`Out of stock: ${[...new Set(zero.map(c=>c.name.split(',')[0]))].join('; ')}`);lev='r'}
+ const shortNZ=short.filter(c=>c.stores[s].on_hand>0);
+ if(shortNZ.length){why.push(`${shortNZ.length} advertised item${shortNZ.length>1?'s':''} short: ${shortNZ.map(c=>c.name.split(',')[0]).slice(0,2).join('; ')}`);if(lev==='g')lev='a'}
+ if(tight.length)why.push(`${tight.length} item${tight.length>1?'s':''} tight on stock`);
+ if(openPO.length)why.push(`${openPO.length} delivery flag${openPO.length>1?'s':''} waiting on Purchasing`);
+ const fc=D.alerts.forecasts[s];const tn=fc.periods[0];const wx=fc.periods.find(p=>p[3]>=40);const al=D.alerts.live.filter(l=>l.level==='Watch'&&l.stores.includes(s));
+ if(al.length){why.push(`Weather watch: ${al.map(l=>D.alerts.rules[l.rule].name).join(', ')}`);if(lev==='g')lev='a'}
+ const camps=[...new Set(D.der.store_perf.filter(r=>r.store===s).map(r=>r.cid))];
+ const per=camps.map(cid=>{const rr=D.der.store_perf.filter(r=>r.store===s&&r.cid===cid);const sp=rr.reduce((x,r)=>x+r.spend,0),rv=rr.reduce((x,r)=>x+r.revenue,0);return {cid,roas:rv/sp}}).sort((x,y)=>y.roas-x.roas);
+ return {a,lev,why,tn,wx,per,short,openPO}}
+function renderDash(){
+ $('#dStores').innerHTML=['All',...STORES].map(s=>`<button aria-pressed="${s===dStore}" data-ds="${s}">${s==='All'?'All stores':s}</button>`).join('');
+ document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{dStore=b.dataset.ds;renderDash()});
+ const a=storeAgg(dStore);const live=D.sim.ttd.length;const plan=D.sim.ttd.reduce((x,t)=>{const c=D.proj.campaigns.find(k=>k.id===t.cid),l=c.lines.find(k=>k.ch===t.ch);return x+(c.id==='C5'?l.spend/6:l.spend/21)*t.days},0);
+ let lev=a.roas>=be()*1.15?'g':a.roas>=be()?'a':'r';
+ if(dStore!=='All')lev=storeHealth(dStore).lev;else if(STORES.some(s=>storeHealth(s).lev!=='g')&&lev==='g')lev='a';
+ $('#dKpis').innerHTML=`<div><span>Spend to date</span><b>${money(a.spend)}</b><small>${dStore==='All'?`${Math.round(a.spend/plan*100)}% of plan`:`${Math.round(a.spend/storeAgg('All').spend*100)}% of all spend`}</small></div>
+  <div><span>Revenue</span><b>${money(a.rev)}</b><small>${$$(a.orders)} orders</small></div>
+  <div><span>Return on ad spend</span><b>${a.roas.toFixed(2)}x</b><small>break-even ${be().toFixed(2)}x</small></div>
+  <div><span>Profit after ads</span><b class="${a.profit<0?'neg':''}">${money(a.profit)}</b><small>at ${S.margin}% margin</small></div>
+  <div><span>Health</span><b style="font-size:22px;margin-top:10px">${dot(lev)}</b><small>${dStore==='All'?`${live} campaign lines live`:dStore}</small></div>`;
+ const attn=[];
+ const g1=D.proj.campaigns.filter(c=>!S.g1[c.id]||S.g1[c.id].a==='rework').length;if(g1)attn.push([`${g1} campaign${g1>1?'s':''} waiting at Gate 1 (results here preview them as approved)`,'f5']);
+ const g3=D.der.adj.filter(x=>!S.g3[x.id]).length;if(g3)attn.push([`${g3} adjustment${g3>1?'s':''} waiting at Gate 3`,'f6']);
+ const po=D.der.flags.filter(f=>S.po[f.id]!=='confirmed'&&(dStore==='All'||f.stores.some(x=>x.store===dStore))).length;if(po)attn.push([`${po} delivery flag${po>1?'s':''} waiting on Purchasing`,'conf']);
+ const adq=D.ads.ads.filter(a=>recCamps().some(c=>c.id===a.cid)&&!S.ad[a.id]).length;if(adq)attn.push([`${adq} ad${adq>1?'s':''} for recommended campaigns waiting on approval`,'ads']);
+ const al=ALD.filter(d=>!d.routed&&!S.al[d.id]&&(dStore==='All'||d.src.stores.includes(dStore))).length;if(al)attn.push([`${al} opportunity alert${al>1?'s':''} drafted, waiting on you`,'alr']);
+ const tk=D.sim.ttd.filter(t=>t.clicks>=100&&t.days>=3&&t.p_above_be<60);tk.forEach(t=>attn.push([`${CN(t.cid)} on ${CH[t.ch]}: ${t.p_above_be}% chance above break-even`,'f6']));
+ $('#dAttn').innerHTML=attn.length?attn.map(([x,tab])=>`<div class="attn"><span>${esc(x)}</span><button class="btn out" data-go="${tab}">Open</button></div>`).join(''):'<p class="muted">Nothing waiting.</p>';
+ document.querySelectorAll('#dAttn [data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+ const best=[...D.sim.ttd].filter(t=>t.clicks>=100&&t.days>=3).sort((x,y)=>y.revenue/y.spend-x.revenue/x.spend)[0];
+ const hs=STORES.map(s=>[s,storeHealth(s)]);const top=[...hs].sort((x,y)=>y[1].a.roas-x[1].a.roas);
+ const ins=[
+  `Best line: ${CN(best.cid)} on ${CH[best.ch]} at ${(best.revenue/best.spend).toFixed(2)}x return, ${best.p_above_be}% likely above break-even.`,
+  `${top[0][0]} leads the stores at ${top[0][1].a.roas.toFixed(2)}x; ${top[3][0]} trails at ${top[3][1].a.roas.toFixed(2)}x.`,
+  D.der.narr.funnel.split('. Likely')[0]+'.',
+  `Sonoma's planting results lag because compost is out there; its ads run planting mix until Purchasing confirms the Oct 23 delivery.`,
+  `Weather: showers 41% to 43% likely Tue night to Wed at all four stores (real NWS). Gutter Gear's rain burst is queued; Ukiah also has a thunderstorm watch draft.`];
+ $('#dIns').innerHTML=(dStore==='All'?ins:[...storeHealth(dStore).why,`Tonight: low ${storeHealth(dStore).tn[2]}°F, ${esc(storeHealth(dStore).tn[4])} (NWS).`]).map(x=>`<li>${esc(x)}</li>`).join('');
+ $('#dStoreCards').innerHTML=hs.map(([s,h])=>`<button class="sc" aria-pressed="${dStore===s}" data-sc="${s}"><h4>${s}<span style="font-size:14px;text-transform:none">${dot(h.lev)}</span></h4>
+  <div class="row"><span>Spend</span><b>${money(h.a.spend)}</b></div><div class="row"><span>Revenue</span><b>${money(h.a.rev)}</b></div><div class="row"><span>Return on ad spend</span><b>${h.a.roas.toFixed(2)}x</b></div><div class="row"><span>Orders</span><b>${$$(h.a.orders)}</b></div>
+  <div class="row"><span>Strongest</span><b style="font-weight:600;font-size:14px">${esc(CN(h.per[0].cid))}</b></div>
+  <div class="row"><span>Tonight</span><b style="font-weight:600;font-size:14px">${h.tn[2]}°F${h.wx?` · ${h.wx[3]}% rain ${esc(h.wx[0])}`:''}</b></div>
+  ${h.why.length?`<ul>${h.why.map(w=>`<li>${esc(w)}</li>`).join('')}</ul>`:'<ul><li>No issues</li></ul>'}</button>`).join('');
+ document.querySelectorAll('[data-sc]').forEach(b=>b.onclick=()=>{dStore=dStore===b.dataset.sc?'All':b.dataset.sc;renderDash()});
+ const rows=D.proj.campaigns.map(c=>{const pr=D.der.store_perf.filter(r=>r.cid===c.id&&(dStore==='All'||r.store===dStore));const tt=D.sim.ttd.filter(t=>t.cid===c.id);
+  if(!tt.length)return `<tr><td><b>${esc(c.name)}</b><div class="small muted">${c.id}</div></td><td>${chip(c.recommend.startsWith('OWNED')?'Email and SMS':'Not live','sim')}</td><td colspan="5" class="small muted">${c.recommend.startsWith('OWNED')?'Runs on frost forecasts from Nov 1; no paid spend.':'Waiting at Gate 1.'}</td></tr>`;
+  if(!pr.length)return `<tr><td><b>${esc(c.name)}</b><div class="small muted">${c.id}</div></td><td>${chip('Not running here','sim')}</td><td colspan="5" class="small muted">${c.id==='C5'?'Standby: runs only where smoke reaches.':'No spend at this store.'}</td></tr>`;
+  const sp=pr.reduce((x,r)=>x+r.spend,0),rv=pr.reduce((x,r)=>x+r.revenue,0),od=pr.reduce((x,r)=>x+r.orders,0),ck=pr.reduce((x,r)=>x+r.clicks,0);const days=Math.max(...tt.map(t=>t.days));
+  const pab=Math.round(tt.reduce((x,t)=>x+t.p_above_be*t.spend,0)/tt.reduce((x,t)=>x+t.spend,0));
+  const byStore=STORES.map(s=>{const q=D.der.store_perf.filter(r=>r.cid===c.id&&r.store===s);const a=q.reduce((x,r)=>x+r.spend,0),b=q.reduce((x,r)=>x+r.revenue,0);return [s,a?b/a:null]}).filter(x=>x[1]!=null).sort((x,y)=>y[1]-x[1]);
+  return `<tr><td><b>${esc(c.name)}</b><div class="small muted">${c.id} · day ${days}${c.id==='C5'?' · smoke day':''}</div></td><td>${dot(hlev(rv/sp,ck,days))}</td><td class="n">${money(sp)}</td><td class="n">${money(rv)}</td><td class="n"><b>${(rv/sp).toFixed(2)}x</b></td><td class="n">${pab}%</td><td class="small">${dStore==='All'&&byStore.length>1?`Best ${byStore[0][0]} ${byStore[0][1].toFixed(1)}x · weakest ${byStore.at(-1)[0]} ${byStore.at(-1)[1].toFixed(1)}x`:byStore.length?esc(byStore[0][0]):''}</td></tr>`}).join('');
+ $('#dCamps').innerHTML=`<tr><th>Campaign</th><th>Health</th><th class="n">Spend</th><th class="n">Revenue</th><th class="n">Return</th><th class="n">Chance above break-even</th><th>By store</th></tr>`+rows}
+function renderSeg(){const fl={EXPLORE:'ok',WATCH:'warn',COVERED:'sim'};
+ $('#segCards').innerHTML=D.der.segments.map(s=>`<article class="camp"><div class="top"><div><div class="small muted">${s.id} · ${esc(s.kind)}</div><h3>${esc(s.name)}</h3></div><div>${chip(s.flag==='EXPLORE'?'Explore':s.flag==='WATCH'?'Watch':'Covered',fl[s.flag])}</div></div>
+ <div class="body"><div class="grid g2"><div><p><b>Real data</b> ${chip('Real','real')}</p><ul class="small">${s.real.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p><b>Friedman's data</b> ${chip('Simulated','sim')}</p><ul class="small">${s.sim.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="small"><b>Why it's an opportunity:</b> ${esc(s.why)}</p></div>
+ <div><p><b>Products</b> ${chip('Real stock','real')}</p>${s.items.map(it=>`<div class="item" style="margin:6px 0">${pimg(it.item)}<div>${esc(it.name)}<div class="code">#${it.item} · ${money(it.price,2)} · ${stockLine(it.stock)}</div></div></div>`).join('')}${s.thin.length?`<p class="small">${chip('Thin stock','warn')} ${s.thin.map(esc).join('; ')}: the agent checks Purchasing before featuring it.</p>`:''}
+ <p class="small"><b>Suggested test:</b> ${esc(s.test)}<br><b>What would confirm it:</b> ${esc(s.confirm)}</p>
+ ${s.flag==='EXPLORE'?`<label class="small" style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" data-seg="${s.id}" ${S.seg[s.id]?'checked':''}> Add to Gate 1 as an optional test</label>`:`<p class="small muted">${s.flag==='WATCH'?'Not offered yet: the data to size and target it isn\'t connected.':'Handled inside an existing campaign.'}</p>`}</div></div></div></article>`).join('');
+ document.querySelectorAll('[data-seg]').forEach(b=>b.onchange=()=>{S.seg[b.dataset.seg]=b.checked;renderSegG1()})}
+function renderSrc(){$('#srcList').innerHTML=D.sources.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`).join('')}
+function renderAll(){renderDash();renderOv();renderF5();renderF1();ALD=ALD.map((d,i)=>d.routed?d:Object.assign(draftAlert(d.src,0),{id:d.id}));renderAlerts();updGateChip()}
+$('#fcMethod').onchange=()=>renderF1();
+renderCF();renderOv();renderF1();renderF2();renderF3();renderF4();renderF5();renderF6();renderSeg();A.live.filter(l=>l.level==='Watch').forEach(l=>ALD.push(draftAlert(l,ALD.length)));renderAlerts();renderSrc();updGateChip();renderDash();
+
+</script>
+</body>
+</html>

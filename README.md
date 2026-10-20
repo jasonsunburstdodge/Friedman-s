@@ -1,6 +1,17 @@
-# Friedman's Home Improvement: AI Content Agent (concept demo)
+# Friedman's Home Improvement: AI agent concepts
 
-A concept by Jason Dodge showing a fully automated, human-approved content system for friedmanshome.com, which runs on Sana Commerce.
+Concepts by Jason Dodge. This repo holds two **separate** agents. They share only the brand guidelines skill (`skills/friedmans-brand-guidelines.md`).
+
+| Agent | What it does | Live demo | Files |
+|---|---|---|---|
+| **Content agent** | Twice-weekly blog posts, product estimators, Sana staging and social | https://jasonsunburstdodge.github.io/Friedman-s/ | Repo root: `index.html`, `PROJECT_INSTRUCTIONS.md`, `skills/`, `social/` |
+| **PPC campaign agent** | Plans, launches and monitors pay-per-click tests, with approval gates | https://jasonsunburstdodge.github.io/Friedman-s/ppc-agent/ | `ppc-agent/` (see its README) |
+
+---
+
+# Content Agent (concept demo)
+
+A fully automated, human-approved content system for friedmanshome.com, which runs on Sana Commerce.
 
 **Live demo:** https://jasonsunburstdodge.github.io/Friedman-s/
 
@@ -20,9 +31,10 @@ A concept by Jason Dodge showing a fully automated, human-approved content syste
 
 | Path | What it is |
 |---|---|
-| `index.html` | The full demo: one self-contained file that works offline |
+| `index.html` | The content agent demo: one self-contained file that works offline |
 | `PROJECT_INSTRUCTIONS.md` | Agent instructions and non-negotiables |
-| `skills/` | The four Claude skills: brand guidelines, blog production, product estimator, Sana release and social |
+| `skills/` | The content agent's four Claude skills: brand guidelines (shared with the PPC agent), blog production, product estimator, Sana release and social |
+| `ppc-agent/` | The separate PPC campaign agent: demo, instructions, skills and build scripts |
 | `social/tiktok/` | Full-quality TikTok videos (1080×1920), posting packet, scripts, build script, music bed and jingle |
 
 ## Notes

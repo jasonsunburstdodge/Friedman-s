@@ -1,0 +1,918 @@
+{
+ "margin": 0.38,
+ "returns": 0.05,
+ "breakeven": 2.77,
+ "bench": {
+  "search": {
+   "label": "Google Search",
+   "cpc": [
+    3.0,
+    1.75,
+    1.28
+   ],
+   "cvr": [
+    0.029,
+    0.035,
+    0.055
+   ],
+   "status": "VERIFIED range",
+   "src": "Retail Home & Garden Search CPC $1.28 (COREPPC via Webtonic, 2026); $1.50 to $3.00 CPC, 3.5% to 5.5% CVR (Webtonic, 2026). Base CPC $1.75 is the agent's midpoint. Not the $8.33 'home improvement' figure, which is contractor lead gen."
+  },
+  "pmax": {
+   "label": "Performance Max + local inventory",
+   "cpc": [
+    1.2,
+    1.05,
+    0.61
+   ],
+   "cvr": [
+    0.021,
+    0.029,
+    0.035
+   ],
+   "status": "VERIFIED range",
+   "src": "Shopping Home & Garden CPC $1.05, CVR 2.9% (FoundryCRO 2026); Shopping CPC $0.61 (COREPPC 2026); CVR 2.1% (OwlClaw); PMax runs about 14% above Shopping CPC (FoundryCRO). High CVR 3.5% is an agent assumption."
+  },
+  "meta": {
+   "label": "Meta (Facebook, Instagram)",
+   "cpc": [
+    1.1,
+    0.63,
+    0.6
+   ],
+   "cvr": [
+    0.012,
+    0.015,
+    0.02
+   ],
+   "status": "Base VERIFIED, spread ASSUMPTION",
+   "src": "Home & Home Improvement traffic CPC $0.63 (WordStream 2026 via Coupler.io); Home & Garden CPC $1.10 (ContentStudio 2026); purchase CVR median about 1.5% (ContentStudio 2026). CVR spread is the agent's."
+  },
+  "tiktok": {
+   "label": "TikTok",
+   "cpc": [
+    0.98,
+    0.75,
+    0.52
+   ],
+   "cvr": [
+    0.014,
+    0.0201,
+    0.026
+   ],
+   "status": "Base VERIFIED, spread ASSUMPTION",
+   "src": "TikTok CTR 1.77%, CPM $13.26, CVR 2.01% (Whatagraph 2026). CPC = CPM / (1,000 x CTR) = $0.75. Spread of 30% is the agent's."
+  },
+  "nextdoor": {
+   "label": "Nextdoor",
+   "cpc": [
+    1.5,
+    1.0,
+    0.7
+   ],
+   "cvr": [
+    0.008,
+    0.012,
+    0.018
+   ],
+   "status": "ASSUMPTION",
+   "src": "No public Nextdoor benchmark found (searched Oct 19, 2026). Treated as a learning test; numbers are agent assumptions."
+  }
+ },
+ "campaigns": [
+  {
+   "id": "C1",
+   "name": "Gutter Gear Before The Rain",
+   "recommend": "RECOMMEND, CONFIRM INBOUND",
+   "theme": "Gutter and drainage bundle, timed to each forecast storm this El Ni\u00f1o winter",
+   "trigger": "NWS rain in the 72-hour forecast for a store zone; burst starts 48 hours before, pauses during heavy rain",
+   "flight": "Oct 21 to Nov 10, 2026 (21 days)",
+   "geo": "All four trade areas; weight by owner-occupied homes (Petaluma 63.9%, Sonoma 63.1%, Santa Rosa 56.2%, Ukiah 45.8%)",
+   "landing": "Gutters & Drainage category with store pickup; storm-prep post with estimator",
+   "creative": [
+    "IT'S TIME TO... CLEAR THE GUTTERS / Get Your Gutters Ready For The Rain / SHOP GUTTER GEAR",
+    "STOP THE OVERFLOW / Send Downspout Water Away From The House / SHOP DRAINAGE",
+    "Spanish variant (separate line): PREP\u00c1RESE PARA LA LLUVIA / SHOP GUTTER GEAR"
+   ],
+   "hypothesis": "Bursts timed 48 hours before forecast rain beat steady daily spend on ROAS by at least 25%.",
+   "basket_note": "ASSUMPTION: about 60 ft of gutter (20 three-foot guard sections), two downspouts and a tube of sealant for leaky seams. Confirm with POS baskets.",
+   "held": [
+    "2298786 Amerimax gutter guard: Santa Rosa went from 84 on Oct 18 to 71 on Oct 19, so it's already moving fast ahead of the rain, and a job uses about 20 sections. Buyers confirm inbound before launch, or the agent caps Search",
+    "300101664 Frost King gutter scoop: 0 at Sonoma, so Sonoma ads drop it",
+    "300101655 Frost King 20 ft gutter guard: 1 at Ukiah, 7 at Santa Rosa and Sonoma, held",
+    "Werner ladders: 0 to 7 per store, never a hero item"
+   ],
+   "items": [
+    {
+     "item": "2298786",
+     "name": "6 in. x 3 ft. Aluminum Gutter Guard, Amerimax",
+     "qty": 20,
+     "price": 5.78,
+     "line": 115.6,
+     "stock": {
+      "Santa Rosa": 71,
+      "Ukiah": 79,
+      "Sonoma": 88,
+      "Petaluma": 44
+     },
+     "new": false
+    },
+    {
+     "item": "2295031",
+     "name": "46 in. Drain Away Downspout Extension Auto Recoil Green, Frost King",
+     "qty": 2,
+     "price": 12.99,
+     "line": 25.98,
+     "stock": {
+      "Santa Rosa": 55,
+      "Ukiah": 55,
+      "Sonoma": 44,
+      "Petaluma": 45
+     },
+     "new": false
+    },
+    {
+     "item": "300101664",
+     "name": "Gutter Scoop, Frost King",
+     "qty": 1,
+     "price": 3.38,
+     "line": 3.38,
+     "stock": {
+      "Santa Rosa": 16,
+      "Ukiah": 14,
+      "Sonoma": 0,
+      "Petaluma": 13
+     },
+     "new": false
+    },
+    {
+     "item": "2000023006",
+     "name": "10.1oz Gutter And Flashing Sealant Aluminum Gray, DAP",
+     "qty": 1,
+     "price": 9.99,
+     "line": 9.99,
+     "stock": {
+      "Santa Rosa": 48,
+      "Ukiah": 21,
+      "Sonoma": 18,
+      "Petaluma": 21
+     },
+     "new": true
+    },
+    {
+     "item": "457905798",
+     "name": "Assorted Colors Nitrile Glove, Atlas",
+     "qty": 1,
+     "price": 6.99,
+     "line": 6.99,
+     "stock": {
+      "Santa Rosa": 23,
+      "Ukiah": 10,
+      "Sonoma": 14,
+      "Petaluma": 13
+     },
+     "new": false
+    }
+   ],
+   "aov": 161.94,
+   "lines": [
+    {
+     "ch": "search",
+     "label": "Google Search",
+     "spend": 2000,
+     "proj": {
+      "low": {
+       "cpc": 3.0,
+       "cvr": 0.029,
+       "clicks": 667,
+       "orders": 19.3,
+       "revenue": 3131,
+       "roas": 1.57,
+       "gross_profit": 1130,
+       "profit_after_ads": -870
+      },
+      "base": {
+       "cpc": 1.75,
+       "cvr": 0.035,
+       "clicks": 1143,
+       "orders": 40.0,
+       "revenue": 6478,
+       "roas": 3.24,
+       "gross_profit": 2338,
+       "profit_after_ads": 338
+      },
+      "high": {
+       "cpc": 1.28,
+       "cvr": 0.055,
+       "clicks": 1562,
+       "orders": 85.9,
+       "revenue": 13917,
+       "roas": 6.96,
+       "gross_profit": 5024,
+       "profit_after_ads": 3024
+      }
+     }
+    },
+    {
+     "ch": "pmax",
+     "label": "Performance Max + local inventory",
+     "spend": 1800,
+     "proj": {
+      "low": {
+       "cpc": 1.2,
+       "cvr": 0.021,
+       "clicks": 1500,
+       "orders": 31.5,
+       "revenue": 5101,
+       "roas": 2.83,
+       "gross_profit": 1842,
+       "profit_after_ads": 42
+      },
+      "base": {
+       "cpc": 1.05,
+       "cvr": 0.029,
+       "clicks": 1714,
+       "orders": 49.7,
+       "revenue": 8051,
+       "roas": 4.47,
+       "gross_profit": 2906,
+       "profit_after_ads": 1106
+      },
+      "high": {
+       "cpc": 0.61,
+       "cvr": 0.035,
+       "clicks": 2951,
+       "orders": 103.3,
+       "revenue": 16725,
+       "roas": 9.29,
+       "gross_profit": 6038,
+       "profit_after_ads": 4238
+      }
+     }
+    }
+   ],
+   "total": {
+    "spend": 3800,
+    "low": {
+     "revenue": 8232,
+     "roas": 2.17,
+     "profit_after_ads": -828
+    },
+    "base": {
+     "revenue": 14529,
+     "roas": 3.82,
+     "profit_after_ads": 1444
+    },
+    "high": {
+     "revenue": 30642,
+     "roas": 8.06,
+     "profit_after_ads": 7262
+    }
+   }
+  },
+  {
+   "id": "C2",
+   "name": "Storm Ready",
+   "recommend": "RECOMMEND IF RESTOCKED",
+   "theme": "Sandbags, tarps, drainage and a wet/dry vac for the El Ni\u00f1o season",
+   "trigger": "NWS wind or flood watch for a store zone; never during an active evacuation",
+   "flight": "Oct 28 to Nov 17, 2026 (21 days), after restock",
+   "geo": "Petaluma and Sonoma trade areas heavier (river and creek flooding history: verify with county flood maps); Santa Rosa and Ukiah lighter",
+   "landing": "Storm Prep collection page with store stock",
+   "creative": [
+    "BE STORM READY / Sandbags, Tarps And A Wet/Dry Vac Before The Big One / SHOP STORM PREP",
+    "Neighborly Nextdoor post: 3 Things To Do Before The First Big Storm / SHOP STORM PREP"
+   ],
+   "hypothesis": "Nextdoor neighborhood targeting earns a lower cost per pickup order than Meta for preparedness bundles.",
+   "basket_note": "ASSUMPTION: one vac, 20 sandbags (filled at home), two heavy-duty tarps, two downspout extensions. The vac drives the basket value.",
+   "held": [
+    "2000054322 Channellock 8 gal wet/dry vac: 3 to 6 per store, fails the hero-ad rule. Agent asks buyers to restock before launch",
+    "2000033008 Superior Pump sump pump: 2 to 5 per store, held",
+    "2330121 blue tarp: 1 at Petaluma, 152 at Ukiah; the heavy-duty tarp is stocked evenly, so it leads",
+    "Dorcy flashlights and COAST headlamp: 0 at Sonoma, held"
+   ],
+   "items": [
+    {
+     "item": "2000054322",
+     "name": "8 GAL 4.0 Peak HP Wet/Dry Vacuum, Channellock",
+     "qty": 1,
+     "price": 99.99,
+     "line": 99.99,
+     "stock": {
+      "Santa Rosa": 5,
+      "Ukiah": 3,
+      "Sonoma": 6,
+      "Petaluma": 6
+     },
+     "new": false
+    },
+    {
+     "item": "4314103",
+     "name": "14 in. x 26 in. Polypropylene Sand Bag Unfilled, Generic",
+     "qty": 20,
+     "price": 0.63,
+     "line": 12.6,
+     "stock": {
+      "Santa Rosa": 4735,
+      "Ukiah": 2953,
+      "Sonoma": 3707,
+      "Petaluma": 4236
+     },
+     "new": true
+    },
+    {
+     "item": "300601171",
+     "name": "7.33 ft. x 9.5 ft. Heavy Duty Finished Size Tarp, Grip-Rite",
+     "qty": 2,
+     "price": 20.99,
+     "line": 41.98,
+     "stock": {
+      "Santa Rosa": 19,
+      "Ukiah": 31,
+      "Sonoma": 17,
+      "Petaluma": 27
+     },
+     "new": false
+    },
+    {
+     "item": "2295031",
+     "name": "46 in. Drain Away Downspout Extension Auto Recoil Green, Frost King",
+     "qty": 2,
+     "price": 12.99,
+     "line": 25.98,
+     "stock": {
+      "Santa Rosa": 55,
+      "Ukiah": 55,
+      "Sonoma": 44,
+      "Petaluma": 45
+     },
+     "new": false
+    },
+    {
+     "item": "457905798",
+     "name": "Assorted Colors Nitrile Glove, Atlas",
+     "qty": 1,
+     "price": 6.99,
+     "line": 6.99,
+     "stock": {
+      "Santa Rosa": 23,
+      "Ukiah": 10,
+      "Sonoma": 14,
+      "Petaluma": 13
+     },
+     "new": false
+    }
+   ],
+   "aov": 187.54,
+   "lines": [
+    {
+     "ch": "meta",
+     "label": "Meta (Facebook, Instagram)",
+     "spend": 1300,
+     "proj": {
+      "low": {
+       "cpc": 1.1,
+       "cvr": 0.012,
+       "clicks": 1182,
+       "orders": 14.2,
+       "revenue": 2660,
+       "roas": 2.05,
+       "gross_profit": 960,
+       "profit_after_ads": -340
+      },
+      "base": {
+       "cpc": 0.63,
+       "cvr": 0.015,
+       "clicks": 2063,
+       "orders": 31.0,
+       "revenue": 5805,
+       "roas": 4.47,
+       "gross_profit": 2096,
+       "profit_after_ads": 796
+      },
+      "high": {
+       "cpc": 0.6,
+       "cvr": 0.02,
+       "clicks": 2167,
+       "orders": 43.3,
+       "revenue": 8127,
+       "roas": 6.25,
+       "gross_profit": 2934,
+       "profit_after_ads": 1634
+      }
+     }
+    },
+    {
+     "ch": "nextdoor",
+     "label": "Nextdoor",
+     "spend": 400,
+     "proj": {
+      "low": {
+       "cpc": 1.5,
+       "cvr": 0.008,
+       "clicks": 267,
+       "orders": 2.1,
+       "revenue": 400,
+       "roas": 1.0,
+       "gross_profit": 144,
+       "profit_after_ads": -256
+      },
+      "base": {
+       "cpc": 1.0,
+       "cvr": 0.012,
+       "clicks": 400,
+       "orders": 4.8,
+       "revenue": 900,
+       "roas": 2.25,
+       "gross_profit": 325,
+       "profit_after_ads": -75
+      },
+      "high": {
+       "cpc": 0.7,
+       "cvr": 0.018,
+       "clicks": 571,
+       "orders": 10.3,
+       "revenue": 1929,
+       "roas": 4.82,
+       "gross_profit": 696,
+       "profit_after_ads": 296
+      }
+     }
+    }
+   ],
+   "total": {
+    "spend": 1700,
+    "low": {
+     "revenue": 3060,
+     "roas": 1.8,
+     "profit_after_ads": -596
+    },
+    "base": {
+     "revenue": 6705,
+     "roas": 3.94,
+     "profit_after_ads": 721
+    },
+    "high": {
+     "revenue": 10056,
+     "roas": 5.92,
+     "profit_after_ads": 1930
+    }
+   }
+  },
+  {
+   "id": "C3",
+   "name": "Fall Planting Before The Rains",
+   "recommend": "RECOMMEND, SONOMA SWAP",
+   "theme": "Compost, mulch and fertilizer for fall beds, pushing deep soil stock",
+   "trigger": "Weekends after the first rain (soil workable) and before first frost in inland valleys",
+   "flight": "Oct 22 to Nov 11, 2026 (21 days)",
+   "geo": "Owner-heavy, higher-income areas: Petaluma ($109,823 median income), Sonoma ($101,281), Santa Rosa ($97,410); Ukiah lighter",
+   "landing": "Content agent's fall planting post with estimator (already built)",
+   "creative": [
+    "IT'S TIME TO... PLANT / Fall Beats Spring In The North Bay / SHOP GARDEN SOIL",
+    "TikTok 45 second how-to reused from the content agent's approved video",
+    "Spanish variant (separate line): EL OTO\u00d1O ES PARA SEMBRAR / SHOP GARDEN SOIL"
+   ],
+   "hypothesis": "Reusing the content agent's how-to video on TikTok earns ROAS within 20% of Meta at lower CPC.",
+   "basket_note": "Estimator default: 60 sq ft bed on clay, compost 3 in. deep (10 bags) and bark mulch 3 in. deep (8 bags).",
+   "held": [
+    "2000030180 Purely Compost and 502204910 Malibu Compost: 0 at Sonoma. Sonoma ads swap to 502203569 Redi-Gro planting mix (78 on hand) until compost is restocked",
+    "453401922 FoxFarm bone meal: 4 to 17 per store, not a hero"
+   ],
+   "items": [
+    {
+     "item": "2000030180",
+     "name": "1.5 Cu Ft Purely Compost, Gardner & Bloome",
+     "qty": 10,
+     "price": 9.99,
+     "line": 99.9,
+     "stock": {
+      "Santa Rosa": 113,
+      "Ukiah": 41,
+      "Sonoma": 0,
+      "Petaluma": 106
+     },
+     "new": false
+    },
+    {
+     "item": "2000002880",
+     "name": "2 cu. ft. Bark Mulch, Redi-Gro",
+     "qty": 8,
+     "price": 7.59,
+     "line": 60.72,
+     "stock": {
+      "Santa Rosa": 147,
+      "Ukiah": 112,
+      "Sonoma": 119,
+      "Petaluma": 93
+     },
+     "new": false
+    },
+    {
+     "item": "2000035127",
+     "name": "4lb Tomato, Vegetable & Herb Fertilizer, Gardner & Bloome",
+     "qty": 1,
+     "price": 9.49,
+     "line": 9.49,
+     "stock": {
+      "Santa Rosa": 16,
+      "Ukiah": 32,
+      "Sonoma": 26,
+      "Petaluma": 33
+     },
+     "new": false
+    }
+   ],
+   "aov": 170.11,
+   "lines": [
+    {
+     "ch": "meta",
+     "label": "Meta (Facebook, Instagram)",
+     "spend": 1600,
+     "proj": {
+      "low": {
+       "cpc": 1.1,
+       "cvr": 0.012,
+       "clicks": 1455,
+       "orders": 17.5,
+       "revenue": 2969,
+       "roas": 1.86,
+       "gross_profit": 1072,
+       "profit_after_ads": -528
+      },
+      "base": {
+       "cpc": 0.63,
+       "cvr": 0.015,
+       "clicks": 2540,
+       "orders": 38.1,
+       "revenue": 6480,
+       "roas": 4.05,
+       "gross_profit": 2339,
+       "profit_after_ads": 739
+      },
+      "high": {
+       "cpc": 0.6,
+       "cvr": 0.02,
+       "clicks": 2667,
+       "orders": 53.3,
+       "revenue": 9073,
+       "roas": 5.67,
+       "gross_profit": 3275,
+       "profit_after_ads": 1675
+      }
+     }
+    },
+    {
+     "ch": "tiktok",
+     "label": "TikTok",
+     "spend": 1000,
+     "proj": {
+      "low": {
+       "cpc": 0.98,
+       "cvr": 0.014,
+       "clicks": 1020,
+       "orders": 14.3,
+       "revenue": 2430,
+       "roas": 2.43,
+       "gross_profit": 877,
+       "profit_after_ads": -123
+      },
+      "base": {
+       "cpc": 0.75,
+       "cvr": 0.0201,
+       "clicks": 1333,
+       "orders": 26.8,
+       "revenue": 4559,
+       "roas": 4.56,
+       "gross_profit": 1646,
+       "profit_after_ads": 646
+      },
+      "high": {
+       "cpc": 0.52,
+       "cvr": 0.026,
+       "clicks": 1923,
+       "orders": 50.0,
+       "revenue": 8506,
+       "roas": 8.51,
+       "gross_profit": 3070,
+       "profit_after_ads": 2070
+      }
+     }
+    }
+   ],
+   "total": {
+    "spend": 2600,
+    "low": {
+     "revenue": 5399,
+     "roas": 2.08,
+     "profit_after_ads": -651
+    },
+    "base": {
+     "revenue": 11039,
+     "roas": 4.25,
+     "profit_after_ads": 1385
+    },
+    "high": {
+     "revenue": 17579,
+     "roas": 6.76,
+     "profit_after_ads": 3745
+    }
+   }
+  },
+  {
+   "id": "C5",
+   "name": "Clean Air Indoors",
+   "recommend": "STANDBY, SMOKE DAYS ONLY",
+   "theme": "HEPA purifiers, filters and N95 masks, shown only when smoke reaches a trade area",
+   "trigger": "AirNow AQI Unhealthy for Sensitive Groups or worse in a trade area; stops when AQI is Moderate for 12 hours",
+   "flight": "Standing standby through Dec 31, 2026; spends only on smoke days",
+   "geo": "Only the trade area under smoke (this week's Cooley Fire smoke reached Sonoma County)",
+   "landing": "Air Quality collection page with store stock",
+   "creative": [
+    "BREATHE EASIER INSIDE / HEPA Purifiers And N95 Masks Ready For Pickup / SHOP AIR QUALITY",
+    "Calm, helpful tone only: no fire imagery, no fear lines"
+   ],
+   "hypothesis": "Smoke-triggered Search and Meta convert at least 2x the always-on rate for air-quality products.",
+   "basket_note": "ASSUMPTION: one 250 sq ft HEPA purifier, a spare filter and a 10-pack of N95 masks.",
+   "held": [
+    "2000002404 Filtrete 250 sq ft purifier: 3 at Sonoma; Sonoma ads lead with N95 masks (109 on hand) instead",
+    "2000002406 370 sq ft purifier: 2 at Sonoma and Petaluma, held"
+   ],
+   "items": [
+    {
+     "item": "2000002404",
+     "name": "250 Sq Ft Room HEPA Air Purifier, Filtrete",
+     "qty": 1,
+     "price": 169,
+     "line": 169,
+     "stock": {
+      "Santa Rosa": 16,
+      "Ukiah": 7,
+      "Sonoma": 3,
+      "Petaluma": 7
+     },
+     "new": true
+    },
+    {
+     "item": "2000002407",
+     "name": "F1 HEPA Air Purifier Replacement Filter, Filtrete",
+     "qty": 1,
+     "price": 21.99,
+     "line": 21.99,
+     "stock": {
+      "Santa Rosa": 6,
+      "Ukiah": 3,
+      "Sonoma": 4,
+      "Petaluma": 8
+     },
+     "new": true
+    },
+    {
+     "item": "2000038308",
+     "name": "Disposable N95 Valved Dust Respirator Mask 10-Pack, 3M",
+     "qty": 1,
+     "price": 23.99,
+     "line": 23.99,
+     "stock": {
+      "Santa Rosa": 123,
+      "Ukiah": 59,
+      "Sonoma": 109,
+      "Petaluma": 80
+     },
+     "new": true
+    }
+   ],
+   "aov": 214.98,
+   "lines": [
+    {
+     "ch": "search",
+     "label": "Google Search",
+     "spend": 400,
+     "proj": {
+      "low": {
+       "cpc": 3.0,
+       "cvr": 0.029,
+       "clicks": 133,
+       "orders": 3.9,
+       "revenue": 831,
+       "roas": 2.08,
+       "gross_profit": 300,
+       "profit_after_ads": -100
+      },
+      "base": {
+       "cpc": 1.75,
+       "cvr": 0.035,
+       "clicks": 229,
+       "orders": 8.0,
+       "revenue": 1720,
+       "roas": 4.3,
+       "gross_profit": 621,
+       "profit_after_ads": 221
+      },
+      "high": {
+       "cpc": 1.28,
+       "cvr": 0.055,
+       "clicks": 312,
+       "orders": 17.2,
+       "revenue": 3695,
+       "roas": 9.24,
+       "gross_profit": 1334,
+       "profit_after_ads": 934
+      }
+     }
+    },
+    {
+     "ch": "meta",
+     "label": "Meta (Facebook, Instagram)",
+     "spend": 400,
+     "proj": {
+      "low": {
+       "cpc": 1.1,
+       "cvr": 0.012,
+       "clicks": 364,
+       "orders": 4.4,
+       "revenue": 938,
+       "roas": 2.35,
+       "gross_profit": 339,
+       "profit_after_ads": -61
+      },
+      "base": {
+       "cpc": 0.63,
+       "cvr": 0.015,
+       "clicks": 635,
+       "orders": 9.5,
+       "revenue": 2047,
+       "roas": 5.12,
+       "gross_profit": 739,
+       "profit_after_ads": 339
+      },
+      "high": {
+       "cpc": 0.6,
+       "cvr": 0.02,
+       "clicks": 667,
+       "orders": 13.3,
+       "revenue": 2866,
+       "roas": 7.17,
+       "gross_profit": 1035,
+       "profit_after_ads": 635
+      }
+     }
+    }
+   ],
+   "total": {
+    "spend": 800,
+    "low": {
+     "revenue": 1769,
+     "roas": 2.21,
+     "profit_after_ads": -161
+    },
+    "base": {
+     "revenue": 3767,
+     "roas": 4.71,
+     "profit_after_ads": 560
+    },
+    "high": {
+     "revenue": 6561,
+     "roas": 8.2,
+     "profit_after_ads": 1569
+    }
+   }
+  },
+  {
+   "id": "C4",
+   "name": "Winterize Before The Frost",
+   "recommend": "OWNED CHANNELS ONLY",
+   "theme": "Faucet covers, pipe insulation and door weatherstripping before the first inland frost",
+   "trigger": "NWS frost advisory for North Bay interior valleys or Ukiah; send 24 to 48 hours ahead",
+   "flight": "Email and SMS on frost forecasts, Nov 1 to Dec 15, 2026",
+   "geo": "Ukiah and Sonoma Valley first (earlier frost), then Santa Rosa and Petaluma",
+   "landing": "Content agent's winterize post with estimator",
+   "creative": [
+    "IT'S TIME TO... WINTERIZE / Cover Faucets Before The First Frost / SHOP PLUMBING",
+    "SMS: Frost tonight in the valley. Cover outdoor faucets and wrap pipes. Pickup at Friedman's: [link] Reply STOP to opt out."
+   ],
+   "hypothesis": "Frost-triggered SMS to opted-in Ukiah customers drives more pickup orders per message than a calendar-timed send.",
+   "basket_note": "ASSUMPTION: two faucets, 18 ft of pipe, one door. Basket value is too low for paid clicks to break even.",
+   "held": [
+    "209001007 Frost King faucet cover: 93 at Ukiah, the deepest stock, so Ukiah messages lead with it",
+    "2000004560 Suncast hose reel: 0 to 3 per store, held"
+   ],
+   "items": [
+    {
+     "item": "209001271",
+     "name": "Pipe & Fittings Insulated Slide On Faucet Cover, Slide On",
+     "qty": 2,
+     "price": 4.69,
+     "line": 9.38,
+     "stock": {
+      "Santa Rosa": 40,
+      "Ukiah": 12,
+      "Sonoma": 36,
+      "Petaluma": 22
+     },
+     "new": false
+    },
+    {
+     "item": "1575334",
+     "name": "1 in. x 1/2 in. Wall Copper Pipe Insulation, Repcor",
+     "qty": 6,
+     "price": 2.99,
+     "line": 17.94,
+     "stock": {
+      "Santa Rosa": 78,
+      "Ukiah": 104,
+      "Sonoma": 78,
+      "Petaluma": 71
+     },
+     "new": false
+    },
+    {
+     "item": "2000023397",
+     "name": "36\" X 84\" Bronze Door Weatherstrip Kit, MD Building",
+     "qty": 1,
+     "price": 24.99,
+     "line": 24.99,
+     "stock": {
+      "Santa Rosa": 10,
+      "Ukiah": 10,
+      "Sonoma": 7,
+      "Petaluma": 7
+     },
+     "new": false
+    },
+    {
+     "item": "2000023418",
+     "name": "1/4\" X 2\" X 36\" White Aluminum & Vinyl Door Sweep, MD Building",
+     "qty": 1,
+     "price": 13.99,
+     "line": 13.99,
+     "stock": {
+      "Santa Rosa": 8,
+      "Ukiah": 7,
+      "Sonoma": 5,
+      "Petaluma": 6
+     },
+     "new": false
+    }
+   ],
+   "aov": 66.3,
+   "lines": [
+    {
+     "ch": "search",
+     "label": "Google Search",
+     "spend": 500,
+     "proj": {
+      "low": {
+       "cpc": 3.0,
+       "cvr": 0.029,
+       "clicks": 167,
+       "orders": 4.8,
+       "revenue": 320,
+       "roas": 0.64,
+       "gross_profit": 116,
+       "profit_after_ads": -384
+      },
+      "base": {
+       "cpc": 1.75,
+       "cvr": 0.035,
+       "clicks": 286,
+       "orders": 10.0,
+       "revenue": 663,
+       "roas": 1.33,
+       "gross_profit": 239,
+       "profit_after_ads": -261
+      },
+      "high": {
+       "cpc": 1.28,
+       "cvr": 0.055,
+       "clicks": 391,
+       "orders": 21.5,
+       "revenue": 1424,
+       "roas": 2.85,
+       "gross_profit": 514,
+       "profit_after_ads": 14
+      }
+     }
+    }
+   ],
+   "total": {
+    "spend": 500,
+    "low": {
+     "revenue": 320,
+     "roas": 0.64,
+     "profit_after_ads": -384
+    },
+    "base": {
+     "revenue": 663,
+     "roas": 1.33,
+     "profit_after_ads": -261
+    },
+    "high": {
+     "revenue": 1424,
+     "roas": 2.85,
+     "profit_after_ads": 14
+    }
+   }
+  }
+ ]
+}

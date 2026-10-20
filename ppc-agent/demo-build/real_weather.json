@@ -1,0 +1,11 @@
+{"source":"NOAA ACIS (data.rcc-acis.org) daily observations, read Oct 19 2026. Season = Oct 1 to Sep 30. Window = Oct 19 to Nov 15.",
+"STS":{"station":"SANTA ROSA SONOMA CO AP","seasons":{
+ "2022-23":{"window_rain":1.23,"season_rain":42.62,"first_frost":"2022-11-03","frost_days":50,"days_over_half_inch":27,"days_over_1in":12,"enso":"La Niña"},
+ "2023-24":{"window_rain":1.27,"season_rain":37.56,"first_frost":"2023-10-27","frost_days":16,"days_over_half_inch":24,"days_over_1in":12,"enso":"El Niño"},
+ "2024-25":{"window_rain":1.44,"season_rain":41.51,"first_frost":"2024-11-16","frost_days":20,"days_over_half_inch":20,"days_over_1in":12,"enso":"Neutral"},
+ "2025-26":{"window_rain":3.78,"season_rain":26.57,"first_frost":"2025-12-29","frost_days":15,"days_over_half_inch":18,"days_over_1in":9,"enso":"Neutral"}}},
+"UKI":{"station":"UKIAH MUNICIPAL AP","seasons":{
+ "2022-23":{"window_rain":2.14,"season_rain":38.93,"first_frost":"2022-11-03","frost_days":53,"days_over_half_inch":24,"days_over_1in":13,"enso":"La Niña"},
+ "2023-24":{"window_rain":1.74,"season_rain":38.39,"first_frost":"2023-10-29","frost_days":14,"days_over_half_inch":26,"days_over_1in":11,"enso":"El Niño"},
+ "2024-25":{"window_rain":2.29,"season_rain":37.03,"first_frost":"2024-11-16","frost_days":26,"days_over_half_inch":21,"days_over_1in":8,"enso":"Neutral"},
+ "2025-26":{"window_rain":3.73,"season_rain":30.43,"first_frost":"2025-12-12","frost_days":14,"days_over_half_inch":22,"days_over_1in":8,"enso":"Neutral"}}}}
