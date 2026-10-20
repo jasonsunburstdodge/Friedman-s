@@ -165,6 +165,26 @@ footer img{height:28px;filter:brightness(0) invert(1)}
 footer a{color:#fff}
 .sr{position:absolute;left:-9999px}
 @media (max-width:600px){h2{font-size:32px}.band{padding:22px 16px}.head .gate{margin-left:0}body{font-size:16px}}
+
+/* Creative presentation only. Campaign data, approval logic and projections unchanged. */
+.camp .creative-visual{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.camp .creative-visual .ad{margin:0!important;border:1px solid #d9e5dd;box-shadow:0 5px 18px rgba(0,55,25,.08)}
+.ad .img,.mp .tile{position:relative;isolation:isolate;overflow:hidden;background:linear-gradient(145deg,#075e30,#172a21);min-height:220px;padding:20px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:0}
+.ad .img:before,.mp .tile:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.04) 0%,rgba(0,0,0,.50) 48%,rgba(0,0,0,.87) 100%)}
+.ad .img .h,.mp .tile .h{font:700 clamp(23px,2.6vw,34px)/1.04 Barlow,Arial,sans-serif;text-transform:none;letter-spacing:-.02em;max-width:94%;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+.ad .img .s,.mp .tile .s{font:400 16px/1.3 "News Cycle",Arial,sans-serif;max-width:95%;color:#fff}
+.ad .img .b,.mp .tile .b{background:var(--yellow);color:#172018;font:700 13px Barlow,Arial,sans-serif;padding:10px 13px;margin-top:13px;border-radius:0;display:inline-block}
+.ad .img .creative-logo,.mp .tile .creative-logo{width:min(178px,75%);height:auto;max-height:54px;object-fit:contain;object-position:left center;background:rgba(255,255,255,.96);padding:7px 9px;border-radius:2px;margin:0 0 auto;align-self:flex-start}
+.ad .img .creative-product,.mp .tile .creative-product{position:absolute;right:12px;top:63px;width:38%;height:40%;object-fit:contain;z-index:-1;background:rgba(255,255,255,.92);padding:8px;border-radius:5px;box-shadow:0 6px 18px rgba(0,0,0,.24)}
+.ad .meta{padding:10px 13px;background:#f5f8f5;color:#405348}
+.mp .tile{margin:10px -12px;min-height:260px;align-items:stretch}
+.mp .tile>div:first-child{display:flex;flex-direction:column;align-items:flex-start;flex:1;min-width:0}
+.mp .tile>div:last-child{align-self:flex-end;flex:0 0 90px}
+.mp .tile>div:last-child img{width:70px;height:70px;object-fit:contain;background:#fff;border-radius:4px}
+.pv{box-shadow:0 3px 14px rgba(0,55,25,.06)}
+.pv .pvh{background:#f4f8f4;color:#173e29}
+@media(max-width:600px){.adwrap{grid-template-columns:minmax(0,1fr)}.ad .img,.mp .tile{min-height:235px}.ad .img .h,.mp .tile .h{font-size:27px}.mp .tile>div:last-child{flex-basis:65px}.mp .tile>div:last-child img{width:58px;height:58px}}
+
 </style>
 </head>
 <body>
@@ -489,6 +509,8 @@ const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&
 const $$=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const money=(n,d=0)=>(n<0?'-':'')+'$'+$$(Math.abs(n),d);
 const STORES=D.sim.stores, P=Object.fromEntries(D.products.map(p=>[p.item,p])), IMG=D.imgs;
+const creativeLogo=()=>{const src=document.querySelector('.head img')?.getAttribute('src');return src?`<img class="creative-logo" src="${src}" alt="Friedman's Home Improvement logo">`:''};
+const creativeProduct=id=>id&&IMG[id]?`<img class="creative-product" src="${IMG[id]}" alt="" loading="lazy">`:'';
 const pimg=id=>IMG[id]?`<img class="pimg" src="${IMG[id]}" alt="">`:`<img class="pimg" src="https://www.friedmanshome.com/product/image/medium/${id}_0.jpg" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
 const stockLine=st=>STORES.map(s=>`${s} ${st[s]}`).join(' · ');
 const chip=(t,c)=>`<span class="chip ${c}">${t}</span>`;
@@ -616,7 +638,7 @@ function renderF5(){const rc=recCamps();let sp=0;rc.forEach(c=>sp+=c.lines.reduc
     <p><b>Products</b> ${chip('Real','real')}</p>${c.items.map(it=>`<div class="item" style="margin:6px 0">${pimg(it.item)}<div>${it.qty} × ${esc(it.name)}<div class="code">#${it.item} · ${money(it.price,2)} · on hand ${stockLine(it.stock)}</div></div></div>`).join('')}
     <p class="small"><b>Basket ${money(c.aov,2)}.</b> ${esc(c.basket_note)}</p>
     <p class="small"><b>Held back:</b> ${c.held.map(esc).join('; ')}</p></div>
-   <div><p><b>Creative to test</b></p>${c.creative.map(cr=>{const parts=cr.split(' / ');return parts.length>=3?`<div class="ad" style="margin-bottom:10px"><div class="img"><div class="h">${esc(parts[0])}</div><div class="s">${esc(parts[1])}</div><div class="b">${esc(parts[2])}</div></div><div class="meta">Friedman's Home Improvement · Sponsored · prices and stock render live from the feed</div></div>`:`<div class="log" style="margin-bottom:10px">${esc(cr)}</div>`}).join('')}</div>
+   <div><p><b>Creative to test</b></p><div class="creative-visual">${c.creative.map(cr=>{const parts=cr.split(' / ');return parts.length>=3?`<div class="ad"><div class="img">${creativeLogo()}${creativeProduct(c.items[0]?.item)}<div class="h">${esc(parts[0])}</div><div class="s">${esc(parts[1])}</div><div class="b">${esc(parts[2])}</div></div><div class="meta">Friedman's Home Improvement · Sponsored · prices and stock render live from the feed</div></div>`:`<div class="log" style="margin-bottom:10px">${esc(cr)}</div>`}).join('')}</div></div>
   </div>
   <h4 style="margin-top:16px">Projection, ${esc(c.flight.split(' (')[0])}</h4>
   <div class="tbl"><table class="proj"><tr><th>Line</th><th class="n">Low</th><th class="n">Base</th><th class="n">High</th></tr>${lines}
@@ -778,10 +800,10 @@ function adPreview(a){const f=a.fmt;const imgs=(a.products||[]).map(i=>pimg(i)).
   <details class="assets"><summary>All assets with character counts</summary>${a.headlines.map(h=>`<div><span>H: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.long_headlines.map(h=>`<div><span>Long: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}${a.descriptions.map(h=>`<div><span>D: ${esc(h.text)}</span>${cc(h)}</div>`).join('')}</details>`;
  if(f==='meta')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored</div></div></div>
   <p style="margin:8px 0;font-size:15px">${esc(a.primary.text)} ${cc(a.primary)}</p>
-  <div class="tile"><div><div class="h">${esc(a.tile.h)}</div><div class="s">${esc(a.tile.s)}</div><span class="b">${esc(a.tile.b)}</span></div><div style="display:flex;gap:4px">${(a.products||[]).slice(0,2).map(i=>pimg(i)).join('')}</div></div>
+  <div class="tile"><div>${creativeLogo()}<div class="h">${esc(a.tile.h)}</div><div class="s">${esc(a.tile.s)}</div><span class="b">${esc(a.tile.b)}</span></div><div style="display:flex;gap:4px">${(a.products||[]).slice(0,2).map(i=>pimg(i)).join('')}</div></div>
   <div class="bar"><div><div class="small muted">FRIEDMANSHOME.COM</div><b>${esc(a.headline.text)}</b> ${cc(a.headline)}<div class="small">${esc(a.description)}</div></div><span class="c">${esc(a.cta)}</span></div></div>`;
  if(f==='nextdoor')return `<div class="mp"><div class="who"><div class="av">F</div><div><b>Friedman's Home Improvement</b><div class="small muted">Sponsored · Local business</div></div></div><p style="margin:8px 0"><b>${esc(a.headline)}</b></p><p style="font-size:15px;margin:0 0 10px">${esc(a.body)}</p><div class="bar"><span class="small">friedmanshome.com</span><span class="c">${esc(a.cta)}</span></div></div>`;
- if(f==='tiktok')return `<div class="tt"><div class="hk">${esc(a.hook.replace(/^0 to 3 s: '/,'').replace(/'$/,''))}</div><b>@friedmanshome</b><div>${esc(a.text.text)} ${cc(a.text)}</div><div class="small" style="opacity:.8;margin-top:4px">Sponsored · ${esc(a.cta)}</div></div>
+ if(f==='tiktok')return `<div class="tt"><div style="background:#fff;padding:6px;margin-bottom:12px">${creativeLogo()}</div><div class="hk">${esc(a.hook.replace(/^0 to 3 s: '/,'').replace(/'$/,''))}</div><b>@friedmanshome</b><div>${esc(a.text.text)} ${cc(a.text)}</div><div class="small" style="opacity:.8;margin-top:4px">Sponsored · ${esc(a.cta)}</div></div>
   <details class="assets"><summary>Script beats</summary><ol class="small" style="margin:6px 0">${[a.hook,...a.beats].map(b=>`<li>${esc(b)}</li>`).join('')}</ol></details>`;
  if(f==='sms')return `<div class="small muted" style="margin-bottom:6px">Text message</div><div class="smsb">${esc(a.text.text)}</div><div style="margin-top:6px">${cc(a.text)} · one text segment</div>`;
  if(f==='email')return `<div style="border:1px solid var(--g200);border-radius:6px;overflow:hidden"><div style="padding:8px 12px;background:var(--g100);font-size:14px"><b>${esc(a.subject)}</b><div class="small muted">${esc(a.preheader)}</div></div>
